@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRIVELUX | Shopping Cart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-red: #c8102e; 
+            --bg-black: #0a0a0a;
+            --card-bg: #161616;
+            --gray-text: #888;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-black);
+            color: white;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 1px solid #333;
+        }
+
+        .logo { font-size: 24px; font-weight: bold; text-decoration: none; color: white; letter-spacing: 2px; }
+        .logo span { color: var(--main-red); }
+
+        .nav-links a {
+            color: #ccc;
+            text-decoration: none;
+            margin-left: 30px;
+            font-size: 14px;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+        .nav-links a:hover { color: var(--main-red); }
+
+        .cart-container {
+            padding: 60px 8%;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 40px;
+        }
+
+        h2 { text-transform: uppercase; margin-bottom: 30px; }
+
+        /* СПИСОК ТОВАРОВ */
+        .cart-items { display: flex; flex-direction: column; gap: 20px; }
+
+        .cart-item {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid #222;
+        }
+
+        .car-img-placeholder {
+            width: 120px;
+            height: 80px;
+            background: #222;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #555;
+        }
+
+        .item-info { flex: 1; }
+        .item-info h3 { margin: 0; font-size: 1.2rem; }
+        .item-info p { color: var(--gray-text); margin: 5px 0; }
+
+        .item-price { font-weight: bold; font-size: 1.1rem; }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #555;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+        .remove-btn:hover { color: var(--main-red); }
+
+        /* БЛОК ИТОГО */
+        .cart-summary {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 10px;
+            border: 1px solid #222;
+            height: fit-content;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            color: var(--gray-text);
+        }
+
+        .total-row {
+            border-top: 1px solid #333;
+            padding-top: 15px;
+            margin-top: 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: var(--main-red);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .checkout-btn:hover { background: #a00d25; }
+
+        @media (max-width: 900px) {
+            .cart-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="home.html" class="logo">DRIVE<span>LUX</span></a>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="orders.html">My Orders</a>
+            <a href="cart.html" style="color: var(--main-red);">Cart</a>
+            <a href="profile.html">Profile</a>
+        </div>
+    </nav>
+
+    <div class="cart-container">
+        <div class="main-content">
+            <h2>Your Selection</h2>
+            <div class="cart-items">
+                <div class="cart-item">
+                    <div class="car-img-placeholder">IMAGE</div>
+                    <div class="item-info">
+                        <h3>Ferrari F8 Tributo</h3>
+                        <p>Category: Supercar</p>
+                    </div>
+                    <div class="item-price">$280,000</div>
+                    <button class="remove-btn">×</button>
+                </div>
+                
+                <div class="cart-item">
+                    <div class="car-img-placeholder">IMAGE</div>
+                    <div class="item-info">
+                        <h3>Porsche 911 GT3</h3>
+                        <p>Category: Sport</p>
+                    </div>
+                    <div class="item-price">$160,000</div>
+                    <button class="remove-btn">×</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="cart-summary">
+            <h3>Summary</h3>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>$440,000</span>
+            </div>
+            <div class="summary-row">
+                <span>Delivery</span>
+                <span>Free</span>
+            </div>
+            <div class="total-row">
+                <span>Total</span>
+                <span>$440,000</span>
+            </div>
+            <button class="checkout-btn" onclick="location.href='orders.html'">
+                Checkout Now
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>

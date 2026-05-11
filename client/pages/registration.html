@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRIVELUX | Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --main-red: #c8102e; --bg-black: #0a0a0a; --card-bg: #161616; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-black); color: white; display: flex; flex-direction: column; min-height: 100vh; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 8%; background: rgba(0,0,0,0.9); border-bottom: 1px solid #333; }
+        .logo { font-size: 24px; font-weight: bold; text-decoration: none; color: white; }
+        .logo span { color: var(--main-red); }
+        .reg-container { flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .reg-card { background: var(--card-bg); padding: 40px; border-radius: 10px; border: 1px solid #222; width: 100%; max-width: 450px; text-align: center; }
+        .form-group { text-align: left; margin-bottom: 15px; }
+        .form-group label { display: block; color: #ccc; font-size: 0.8rem; margin-bottom: 5px; }
+        .form-group input { width: 100%; padding: 12px; background: #050505; border: 1px solid #333; border-radius: 5px; color: white; box-sizing: border-box; }
+        .submit-btn { width: 100%; background: var(--main-red); color: white; padding: 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .form-footer { margin-top: 20px; font-size: 0.8rem; color: #666; }
+        .form-footer a { color: var(--main-red); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="home.html" class="logo">DRIVE<span>LUX</span></a>
+    </nav>
+    <div class="reg-container">
+        <div class="reg-card">
+            <h2>Create Account</h2>
+            <form>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="john@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                <button type="button" class="submit-btn" onclick="window.location.href='profile.html'">
+                    Create Account
+                </button>
+            </form>
+            <div class="form-footer">
+                Already have an account? <a href="login.html">Sign In</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

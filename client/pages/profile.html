@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRIVELUX | Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-red: #c8102e; 
+            --bg-black: #0a0a0a;
+            --card-bg: #161616;
+        }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-black);
+            color: white;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 1px solid #333;
+        }
+         .nav-links a {
+            color: #ccc;
+            text-decoration: none;
+            margin-left: 30px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        .logo { font-size: 24px; font-weight: bold; letter-spacing: 2px; text-decoration: none; color: white; }
+        .logo span { color: var(--main-red); }
+        
+        .profile-container { padding: 80px 8%; text-align: center; }
+        .welcome-card {
+            background: var(--card-bg);
+            padding: 50px;
+            border-radius: 10px;
+            border: 1px solid #222;
+            display: inline-block;
+        }
+        .avatar { font-size: 5rem; margin-bottom: 20px; }
+        .logout-link { color: var(--main-red); text-decoration: none; font-weight: bold; margin-top: 20px; display: block; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="home.html" class="logo">DRIVE<span>LUX</span></a>
+        <div class="nav-links">
+        <a href="home.html">Home</a>
+        <a href="orders.html">My Orders</a>
+        <a href="home.html">Logout</a>
+        <a href="cart.html">Cart</a>
+    </div>
+    </nav>
+    <div class="profile-container">
+        <div class="welcome-card">
+            <div class="avatar">👤</div>
+            <h1>Welcome Back!</h1>
+            <p>You have successfully accessed your DriveLux fleet.</p>
+            <a href="home.html" class="logout-link">Log Out</a>
+        </div>
+    </div>
+
+    <style>
+    /* Добавь это в секцию <style> */
+    .garage-section {
+        margin-top: 50px;
+        text-align: left;
+    }
+    .garage-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .car-item {
+        background: #111;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #333;
+    }
+    .car-item h3 { margin: 0; color: var(--main-red); font-size: 1rem; }
+    .car-item p { color: #888; font-size: 0.8rem; margin: 5px 0; }
+    .status { font-weight: bold; color: #00ff88; font-size: 0.7rem; text-transform: uppercase; }
+</style>
+
+<div class="garage-section">
+    <h2>My Personal Garage</h2>
+    <div class="garage-grid">
+        <div class="car-item">
+            <h3>Ferrari F8</h3>
+            <p>Added: 12.05.2026</p>
+            <span class="status">● In Garage</span>
+        </div>
+        <div class="car-item">
+            <h3>Porsche 911</h3>
+            <p>Added: 01.03.2026</p>
+            <span class="status">● In Service</span>
+        </div>
+        <div class="car-item">
+            <h3>Tesla Model S</h3>
+            <p>Added: 15.01.2026</p>
+            <span class="status">● In Garage</span>
+        </div>
+    </div>
+</div>
+</body>
+</html>

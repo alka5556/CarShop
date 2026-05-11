@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRIVELUX | My Orders</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-red: #c8102e; 
+            --bg-black: #0a0a0a;
+            --card-bg: #161616;
+            --gray-text: #888;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-black);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* NAVIGATION */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 8%;
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 1px solid #333;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo span { color: var(--main-red); }
+
+        .nav-links a {
+            color: #ccc;
+            text-decoration: none;
+            margin-left: 30px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        /* CONTENT */
+        .orders-container {
+            padding: 60px 8%;
+            flex: 1;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        h2 { text-transform: uppercase; letter-spacing: 1px; }
+
+        /* TABLE STYLES */
+        .orders-table-wrapper {
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid #222;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: #111;
+            padding: 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--gray-text);
+            border-bottom: 1px solid #222;
+        }
+
+        td {
+            padding: 20px;
+            border-bottom: 1px solid #222;
+            font-size: 0.95rem;
+        }
+
+        tr:last-child td { border-bottom: none; }
+
+        .order-id { font-weight: bold; color: var(--main-red); }
+        
+        .status-pill {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-completed { background: rgba(0, 255, 136, 0.1); color: #00ff88; }
+        .status-pending { background: rgba(255, 191, 0, 0.1); color: #ffbf00; }
+
+        .price-cell { font-weight: bold; }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #444;
+            border-top: 1px solid #222;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="home.html" class="logo">DRIVE<span>LUX</span></a>
+        <div class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="profile.html">Profile</a>
+            <a href="home.html">Logout</a>
+            <a href="cart.html">Cart</a>
+        </div>
+    </nav>
+
+    <div class="orders-container">
+        <div class="header-section">
+            <h2>Order History</h2>
+        </div>
+
+        <div class="orders-table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Car Model</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="order-id">#DL-8802</td>
+                        <td>Ferrari F8 Tributo</td>
+                        <td>May 10, 2026</td>
+                        <td><span class="status-pill status-completed">Completed</span></td>
+                        <td class="price-cell">$280,000</td>
+                    </tr>
+                    <tr>
+                        <td class="order-id">#DL-7541</td>
+                        <td>Porsche 911 GT3</td>
+                        <td>March 15, 2026</td>
+                        <td><span class="status-pill status-completed">Completed</span></td>
+                        <td class="price-cell">$160,000</td>
+                    </tr>
+                    <tr>
+                        <td class="order-id">#DL-9012</td>
+                        <td>Lamborghini Revuelto</td>
+                        <td>May 28, 2026</td>
+                        <td><span class="status-pill status-pending">Pending</span></td>
+                        <td class="price-cell">$600,000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 DriveLux Automotive. Built for Final Project.
+    </footer>
+
+</body>
+</html>
