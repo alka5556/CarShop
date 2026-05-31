@@ -1,0 +1,61 @@
+GET http://localhost:3000/cars
+
+###
+
+POST http://localhost:3000/cars
+Content-Type: application/json
+
+{
+  "brand": "Toyota",
+  "model": "Camry",
+  "year": 2022,
+  "price": 25000
+}
+
+###
+
+POST http://localhost:3000/cars
+Content-Type: application/json
+
+{
+  "brand": "BMW",
+  "model": "BMW i7",
+  "year": 2023,
+  "price": 45000
+}
+
+###
+POST http://localhost:3000/cars
+Content-Type: application/json
+
+{
+  "brand": "Ferrari",
+  "model": "F8 Tributo",
+  "year": 2021,
+  "price": 99999
+}
+
+###
+
+GET http://localhost:3000/cars?brand=Ferrari
+
+###
+
+POST http://localhost:3000/users/registration
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "email": "alice@gmail.com",
+  "password": "123456"
+}
+
+###
+POST http://localhost:3000/users/registration
+Content-Type: application/json
+
+{
+  "username": "bob",
+  "email": "bob@gmail.com",
+  "password": "123456"
+}

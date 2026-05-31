@@ -1,29 +1,12 @@
+//  роль - только принимает запрос и передаёт контроллеру
 const express = require('express')
 const router = express.Router()
+const carController = require('../controllers/car')
 
-router.post("/", (req, res) => {
-  console.log("post")
-  res.send("post")
-})
-
-router.get("/", (req, res) => {
-  console.log("get")
-  res.send("get")
-})
-
-router.get("/:id", (req, res) => {
-  console.log("get")
-  res.send("get")
-})
-
-router.put("/:id", (req, res) => {
-  console.log("put")
-  res.send("put")
-})
-
-router.delete("/:id", (req, res) => {
-  console.log("delete")
-  res.send("delete")
-})
+router.post("/", carController.createCar) 
+router.get("/", carController.getAllCars) // "GET запрос? иди к getAllCars"
+router.get("/:id", carController.getCarById)
+router.put("/:id", carController.updateCar)
+router.delete("/:id", carController.deleteCar)
 
 module.exports = router
