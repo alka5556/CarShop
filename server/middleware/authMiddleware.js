@@ -18,7 +18,7 @@ exports.protect = async (req, res, next) => { //функция которая с
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = await User.findById(decoded.id);
-        next();
+        next(); //возвращает null. nullable стоит дать.
 
     } catch (error) {
         res.status(401).json({ message: 'Invalid token' });

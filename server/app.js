@@ -26,6 +26,9 @@ app.use('/cars', carRoutes)
 const userRoutes = require('./routes/user_routes')
 app.use('/users', userRoutes)
 
+const orderRoutes = require('./routes/order_routes')
+app.use('/orders', orderRoutes)
+
 app.use((err, req, res, next) => {
     console.log('ERROR:', err)
     res.status(500).json({ message: err.message })

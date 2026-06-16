@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password: {
         type: String,
@@ -19,9 +20,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['user', 'admin'],  // монгодб разрешает ТОЛЬКО эти два значения
         default: 'user'      // если при регистрации не указать роль то автоматически будет 'user'
-    }
+    },
+    refreshTokens: [{ //массив токенов
+        type: String 
+    }]
 },
-    { timestamps: true })    
+{ timestamps: true })    
 
 userSchema.pre('save', async function () { //функция запускается перед сохранением в базу
     if (!this.isModified('password')) return; // если пароль не измеинлся то продолжает

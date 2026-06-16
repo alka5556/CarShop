@@ -69,3 +69,143 @@ Content-Type: application/json
   "email": "bob@gmail.com",
   "password": "123456"
 }
+
+###
+POST http://localhost:3000/cars
+
+###
+
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "email": "bob@gmail.com",
+  "password": "123456"
+}
+
+###
+
+POST http://localhost:3000/cars
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMWNhYjQ5YTdiMjE0MjMzNDhjYmU0YyIsImlhdCI6MTc4MDMzNjY3MiwiZXhwIjoxNzgyMDY0NjcyfQ.VRk-Y2r8x8JpOJL2X-zVb9XGU_P31f_y47flaW0wpqg
+Content-Type: application/json
+
+{
+  "brand": "Toyota",
+  "price": 20000
+}
+
+###
+
+POST http://localhost:3000/users/registration
+Content-Type: application/json
+
+{
+  "username": "alice",
+  "email": "alice@example.com",
+  "password": "123456"
+}
+
+###
+
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "email": "alice@example.com",
+  "password": "123456"
+}
+
+###
+
+POST http://localhost:3000/cars
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMWVhMGFlNDE2MWQwYjgyZGRlN2ZmYiIsImlhdCI6MTc4MDM5Mjc0MiwiZXhwIjoxNzgyMTIwNzQyfQ._jxr55qeLI5oVeBDbKZq59Sp-FP3pruk9rzh7DXtwlU
+Content-Type: application/json
+
+{
+  "brand": "BMW",
+  "model": "X5",
+  "year": 2024,
+  "price": 80000
+}
+###
+
+POST http://localhost:3000/users/registration
+Content-Type: application/json
+
+{
+    "username": "test",
+    "email": "test@test.com",
+    "password": "123456"
+}
+
+###
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+    "email": "test@test.com",
+    "password": "123456"
+}
+###
+POST http://localhost:3000/users/refresh
+Content-Type: application/json
+
+{
+    "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMjg1MjBlNjQwNTI4MDA3OTg4NmU5NiIsImlhdCI6MTc4MTAyNzQzMiwiZXhwIjoxNzgyNzU1NDMyfQ.GAsaX0g-JHg3aIZ1PgRxIFO5i0TxoCRwPxoGBzJizEI"
+}
+
+###
+POST http://localhost:3000/users/registration
+Content-Type: application/json
+
+{
+    "username": "maria",
+    "email": "maria@test.com",
+    "password": "12776"
+}
+###
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "email": "maria@test.com",
+  "password": "12776"
+}
+
+###
+GET http://localhost:3000/users/user-profile
+Headers:
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzFiODNmNWUwYmY5ZmY4NjBkNDU5NiIsInJhbmRvbSI6NDM2MjM3LCJpYXQiOjE3ODE2NDQ3NjQsImV4cCI6MTc4MzM3Mjc2NH0.HJ-yUccMcss-Guv-CmwWzIoyHI4dKmX_1MCbXKFle6Y
+
+###
+POST http://localhost:3000/users/logout
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzFiODNmNWUwYmY5ZmY4NjBkNDU5NiIsInJhbmRvbSI6OTEwODAsImlhdCI6MTc4MTY0NTE5NSwiZXhwIjoxNzgzMzczMTk1fQ.5-753PWypGHtHnL2IA_oE43l_7YWA6Hwuf89j9SRfeA"
+}
+
+###
+
+POST http://localhost:3000/users/refresh
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzFiODNmNWUwYmY5ZmY4NjBkNDU5NiIsInJhbmRvbSI6NjUzMDgsImlhdCI6MTc4MTY0Njc0MSwiZXhwIjoxNzgzMzc0NzQxfQ.Ht4hOcs-1Y9eaPQ1nunpOPEL0nk1Vxqu66kW0fCL1Ms"
+}
+###
+POST http://localhost:3000/orders
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzFiODNmNWUwYmY5ZmY4NjBkNDU5NiIsInJhbmRvbSI6MjkxODQ1LCJpYXQiOjE3ODE2NDc5MzgsImV4cCI6MTc4MzM3NTkzOH0.IcEjtLw2j_HFycUvK068dgUJChPjThONcNNHuY1FqEk
+Content-Type: application/json
+
+{
+    "carId": "6a1ea36a4161d0b82dde7ffc"
+}
+
+###
+GET http://localhost:3000/orders/user-orders
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzFiODNmNWUwYmY5ZmY4NjBkNDU5NiIsInJhbmRvbSI6MjkxODQ1LCJpYXQiOjE3ODE2NDc5MzgsImV4cCI6MTc4MzM3NTkzOH0.IcEjtLw2j_HFycUvK068dgUJChPjThONcNNHuY1FqEk
+
+###
+GET http://localhost:3000/orders
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzFiODNmNWUwYmY5ZmY4NjBkNDU5NiIsInJhbmRvbSI6MjkxODQ1LCJpYXQiOjE3ODE2NDc5MzgsImV4cCI6MTc4MzM3NTkzOH0.IcEjtLw2j_HFycUvK068dgUJChPjThONcNNHuY1FqEk
