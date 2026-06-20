@@ -1,0 +1,79 @@
+:root {
+    --main-red: #c8102e;
+    --bg-black: #0a0a0a;
+    --card-bg: #161616;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-black);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.reg-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.reg-card {
+    background: var(--card-bg);
+    padding: 40px;
+    border-radius: 10px;
+    border: 1px solid #222;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+}
+
+.form-group {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    color: #ccc;
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background: #050505;
+    border: 1px solid #333;
+    border-radius: 5px;
+    color: white;
+    box-sizing: border-box;
+}
+
+.submit-btn {
+    width: 100%;
+    background: var(--main-red);
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+.form-footer {
+    margin-top: 20px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.form-footer a {
+    color: var(--main-red);
+    text-decoration: none;
+}

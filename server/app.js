@@ -2,9 +2,12 @@ console.log('APP STARTED')
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 require('dotenv').config()
 
 const app = express()
+
+app.use(cors())
 
 // Подключаемся к базе
 mongoose.connect(process.env.DATABASE_URL)
@@ -28,6 +31,9 @@ app.use('/users', userRoutes)
 
 const orderRoutes = require('./routes/order_routes')
 app.use('/orders', orderRoutes)
+
+const cartRoutes = require('./routes/cart_routes')
+app.use('/cart', cartRoutes)
 
 app.use((err, req, res, next) => {
     console.log('ERROR:', err)

@@ -1,0 +1,141 @@
+:root {
+    --main-red: #c8102e;
+    --bg-black: #0a0a0a;
+    --card-bg: #161616;
+}
+
+.page {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-black);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 8%;
+    background: rgba(0,0,0,0.9);
+    border-bottom: 1px solid #333;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-decoration: none;
+    color: white;
+}
+
+.logo span { color: var(--main-red); }
+
+.nav-links a {
+    color: #ccc;
+    text-decoration: none;
+    margin-left: 30px;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.login-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+}
+
+.login-card {
+    background-color: var(--card-bg);
+    padding: 50px;
+    border-radius: 10px;
+    border: 1px solid #222;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-card h2 {
+    margin: 0 0 10px 0;
+    font-size: 2rem;
+    text-transform: uppercase;
+}
+
+.login-card p {
+    color: #888;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+
+.form-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #ccc;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 15px;
+    background-color: #050505;
+    border: 1px solid #333;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--main-red);
+}
+
+.submit-btn {
+    width: 100%;
+    background-color: var(--main-red);
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+
+.submit-btn:hover {
+    background-color: #a00d25;
+}
+
+.form-footer {
+    margin-top: 25px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.form-footer a {
+    color: var(--main-red);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.footer {
+    text-align: center;
+    padding: 30px;
+    color: #444;
+    border-top: 1px solid #222;
+    font-size: 0.8rem;
+}

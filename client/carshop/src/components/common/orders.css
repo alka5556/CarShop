@@ -1,0 +1,120 @@
+:root {
+    --main-red: #c8102e;
+    --bg-black: #0a0a0a;
+    --card-bg: #161616;
+    --gray-text: #888;
+}
+
+.page {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-black);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 8%;
+    background: rgba(0,0,0,0.9);
+    border-bottom: 1px solid #333;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-decoration: none;
+    color: white;
+}
+
+.logo span { color: var(--main-red); }
+
+.nav-links a {
+    color: #ccc;
+    text-decoration: none;
+    margin-left: 30px;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.orders-container {
+    padding: 60px 8%;
+    flex: 1;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+h2 {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.orders-table-wrapper {
+    background: var(--card-bg);
+    border-radius: 10px;
+    border: 1px solid #222;
+    overflow-x: auto;   /* было overflow: hidden */
+}
+
+td, th {
+    white-space: nowrap;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th {
+    background: #111;
+    padding: 20px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--gray-text);
+    border-bottom: 1px solid #222;
+}
+
+td {
+    padding: 20px;
+    border-bottom: 1px solid #222;
+    font-size: 0.95rem;
+}
+
+tr:last-child td { border-bottom: none; }
+
+.order-id {
+    font-weight: bold;
+    color: var(--main-red);
+}
+
+.status-pill {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-completed { background: rgba(0,255,136,0.1); color: #00ff88; }
+.status-pending { background: rgba(255,191,0,0.1); color: #ffbf00; }
+
+.price-cell { font-weight: bold; }
+
+.footer {
+    text-align: center;
+    padding: 30px;
+    color: #444;
+    border-top: 1px solid #222;
+    font-size: 0.8rem;
+}
