@@ -4,7 +4,7 @@ import './orders.css'
 
 interface Order {
     _id: string
-    carId: { brand: string; model: string }
+    carId: {brand: string; model: string}
     date: string
     status: 'completed' | 'pending'
     amount: number
@@ -38,6 +38,7 @@ const Orders: FC = () => {
     }
     fetchOrders()
 }, [])
+
     return (
         <div className="page">
             <nav className="nav">

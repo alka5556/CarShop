@@ -8,7 +8,7 @@ interface User {
     email: string
 }
 
-interface GarageCar {
+interface GarageCar { //ОФОРМИТЬ!!!!!!!! юсэффект!!!
     _id: string
     name: string
     addedDate: string
@@ -20,7 +20,7 @@ const Profile: FC = () => {
     const [user, setUser] = useState<User | null>(null)
     const [garageCars] = useState<GarageCar[]>([]) // наш гараж, пока пустой, так что будут видны тачки заглушки ниже
 
-    useEffect(() => {
+    useEffect(() => { //нужен только если действие должно произойти автоматически
         const fetchProfile = async () => {
             try {
                 const token = localStorage.getItem('accessToken')//достаем сохранимый ранее токен при вхоже
@@ -64,50 +64,50 @@ const Profile: FC = () => {
     }
 
     return (
-        <div className='page'>
-            <nav className='nav'>
-                <Link to='/' className='logo'>DRIVE<span>LUX</span></Link>
-                <div className='nav-links'>
-                    <Link to='/'>Home</Link>
-                    <Link to='/orders'>My Orders</Link>
-                    <Link to='/cart'>Cart</Link>
-                    <button onClick={Logout} className='logout-btn'>Logout</button>
+        <div className="page">
+            <nav className="nav">
+                <Link to="/" className="logo">DRIVE<span>LUX</span></Link>
+                <div className="nav-links">
+                    <Link to="/">Home</Link>
+                    <Link to="/orders">My Orders</Link>
+                    <Link to="/cart">Cart</Link>
+                    <button onClick={Logout} className="logout-btn">Logout</button>
                 </div>
             </nav>
 
-            <div className='profile-container'>
-                <div className='welcome-card'>
-                    <div className='avatar'>👤</div>
-                    <h1>Welcome Back{user ? `, ${user.username}` : ''}!</h1>
+            <div className="profile-container">
+                <div className="welcome-card">
+                    <div className="avatar">👤</div>
+                    <h1>Welcome Back{user ? `, ${user.username}` : ""}!</h1>
                     <p>You have successfully accessed your DriveLux fleet.</p>
-                    <p className='user-email'>{user?.email}</p>
+                    <p className="user-email">{user?.email}</p>
                 </div>
 
-                <div className='garage-section'>
+                <div className="garage-section">
                     <h2>My Personal Garage</h2>
-                    <div className='garage-grid'>
+                    <div className="garage-grid">
                         {garageCars.length > 0 ? garageCars.map((car) => (
-                            <div className='car-item' key={car._id}>
+                            <div className="car-item" key={car._id}>
                                 <h3>{car.name}</h3>
                                 <p>Added: {car.addedDate}</p>
-                                <span className='status'>● {car.status}</span>
+                                <span className="status">{car.status}</span>
                             </div>
                         )) : (
                             <>
-                                <div className='car-item'>
+                                <div className="car-item">
                                     <h3>carname1</h3>
                                     <p>Added:</p>
-                                    <span className='status'>In Garage</span>
+                                    <span className="status">In Garage</span>
                                 </div>
-                                <div className='car-item'>
+                                <div className="car-item">
                                     <h3>carname2</h3>
                                     <p>Added:</p>
-                                    <span className='status'>In Service</span>
+                                    <span className="status">In Service</span>
                                 </div>
-                                <div className='car-item'>
+                                <div className="car-item">
                                     <h3>carname3</h3>
                                     <p>Added:</p>
-                                    <span className='status'>In Garage</span>
+                                    <span className="status">In Garage</span>
                                 </div>
                             </>
                         )}
@@ -115,7 +115,7 @@ const Profile: FC = () => {
                 </div>
             </div>
 
-            <footer className='footer'>
+            <footer className="footer">
                 &copy; 2026 DriveLux Automotive. Built for Final Project.
             </footer>
         </div>
