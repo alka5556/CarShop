@@ -1,6 +1,6 @@
-import {type FC} from 'react'
-import {useForm} from 'react-hook-form'
-import {useNavigate} from 'react-router-dom'
+import { type FC, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Link, useNavigate } from 'react-router-dom'
 import './registration.css'
 
 interface RegisterData {
@@ -11,53 +11,113 @@ interface RegisterData {
 
 const Registration: FC = () => {
     const navigate = useNavigate()
-    const {register, handleSubmit} = useForm<RegisterData>()
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
-    const Register = async (data: RegisterData) => {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm<RegisterData>()
+
+    const onRegister = async (data: RegisterData) => {
         console.log("Data for registration:", data)
+        setError(null)
+        setLoading(true)
 
         try {
-            const response = await fetch('http://localhost:3000/users/registration',
-                {
-                    method: "POST",
-                    headers: {"Content-Type": "application/json"},
-                    body: JSON.stringify(data)
-                }
-            )
+            const response = await fetch('http://localhost:3000/users/registration', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
 
             const result = await response.json()
-            console.log(result)
+
+            // Если сервер вернул ошибку — показываем её и НЕ редиректим
+            if (!response.ok) {
+                setError(result.message || "Ошибка регистрации. Попробуйте ещё раз.")
+                return
+            }
+
+            console.log("Registration success:", result)
             navigate('/login')
         } catch (error) {
-            console.error(error)
+            console.error("Registration error:", error)
+            setError("Сервер недоступен. Проверьте подключение.")
+        } finally {
+            setLoading(false)
         }
     }
 
     return (
-        <form onSubmit={handleSubmit(Register)}>
-            <div className="reg-container">
-                <div className="reg-card">
-                    <h1>Register</h1>
+        <div className="reg-container">
+            <div className="reg-card">
+                <h1>Register</h1>
 
+                {error && <div className="error-message">{error}</div>}
+
+                <form onSubmit={handleSubmit(onRegister)} noValidate>
                     <div className="form-group">
                         <label htmlFor="username">Username</label>
-                        <input {...register("username")} type="text" id="username" />
+                        <input
+                            {...register("username", {
+                                required: "Username обязателен",
+                                minLength: { value: 3, message: "Минимум 3 символа" }
+                            })}
+                            type="text"
+                            id="username"
+                            disabled={loading}
+                        />
+                        {errors.username && (
+                            <span className="field-error">{errors.username.message}</span>
+                        )}
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
-                        <input {...register("email")} type="email" id="email" />
+                        <input
+                            {...register("email", {
+                                required: "Email обязателен"
+                            })}
+                            type="email"
+                            id="email"
+                            disabled={loading}
+                        />
+                        {errors.email && (
+                            <span className="field-error">{errors.email.message}</span>
+                        )}
                     </div>
 
                     <div className="form-group">
                         <label htmlFor="password">Password</label>
-                        <input {...register("password")} type="password" id="password" />
+                        <input
+                            {...register("password", {
+                                required: "Пароль обязателен",
+                                minLength: {
+                                    value: 8,
+                                    message: "Минимум 8 символов"
+                                }
+                            })}
+                            type="password"
+                            id="password"
+                            disabled={loading}
+                        />
+                        {errors.password && (
+                            <span className="field-error">{errors.password.message}</span>
+                        )}
                     </div>
 
-                    <button type="submit" className="submit-btn">Register</button>
+                    <button type="submit" className="submit-btn" disabled={loading}>
+                        {loading ? "Registering..." : "Register"}
+                    </button>
+                </form>
+
+                <div className="form-footer">
+                    Already have an account? <Link to="/login">Sign in</Link>
                 </div>
             </div>
-        </form>
+        </div>
     )
 }
 

@@ -29,12 +29,15 @@ exports.registration = async (req, res, next) => {
       password: req.body.password
     })
     const savedUser = await user.save()
-    const { accessToken, refreshToken } = generateTokens(savedUser._id)
+    const {accessToken, refreshToken} = generateTokens(savedUser._id)
 
       savedUser.refreshTokens = [refreshToken]
       await savedUser.save()
 
-     res.status(201).json({ success: true, accessToken, refreshToken })
+    res.status(201).json({ 
+    success: true, accessToken, refreshToken,
+    user: {role: savedUser.role} // <-- ДОБАВИЛИ ЭТУ СТРОКУ
+})
 
   } catch (error) {
     next(error)
@@ -61,13 +64,16 @@ exports.login = async (req, res, next) => {
             return res.status(401).json({message: 'Invalid credentials'})
         }
 
-        const { accessToken, refreshToken } = generateTokens(user._id)
+        const {accessToken, refreshToken} = generateTokens(user._id)
 
         user.refreshTokens = user.refreshTokens || [] //если рефреш токен есть оставляем как есть, иначе создаем пустое место
         user.refreshTokens.push(refreshToken) //добавляем новый токен в массив
         await user.save()
 
-        res.status(200).json({ success: true, accessToken, refreshToken })
+        res.status(200).json({ 
+            success: true, accessToken, refreshToken,
+            user: { role: user.role } // <-- ДОБАВИЛИ ЭТУ СТРОКУ
+})
 
     } catch (error) {
         next (error)

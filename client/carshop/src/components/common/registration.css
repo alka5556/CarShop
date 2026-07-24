@@ -77,3 +77,36 @@ body {
     color: var(--main-red);
     text-decoration: none;
 }
+
+.error-message {
+    background: rgba(255, 50, 50, 0.1);
+    border: 1px solid #ff3232;
+    color: #ff3232;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.field-error {
+    color: #ff3232;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.form-footer {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+.form-footer a {
+    color: #c8102e;
+    text-decoration: none;
+}

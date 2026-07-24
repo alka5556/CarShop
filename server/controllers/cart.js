@@ -40,8 +40,8 @@ exports.addToCart = async (req, res, next) => {
 exports.removeFromCart = async (req, res, next) => {
     try {
         const { id } = req.params
-        const deleted = await Cart.findOneAndDelete({ _id: id, userId: req.user.id })
-
+        const deleted = await Cart.findOneAndDelete({ _id: id, userId: req.user.id }) //найти и удалить одну запись которая соотвествует этим двум условиям
+//монгодб по сути своей ищет запись именно этого айди заказа у именно этого юзера
         if (!deleted) {
             return res.status(404).json({ message: 'Item not found in cart' })
         }

@@ -7,7 +7,8 @@ exports.createCar = async (req, res) => {
       brand: req.body.brand,
       model: req.body.model,
       year: req.body.year,
-      price: req.body.price
+      price: req.body.price,
+      imageUrl: "" // Пока оставляем пустым
     })
 
     const savedCar = await car.save() // сохраняется в монгодб. кар сейв это метод который записывает обьект в базу. благодаря ему уже отображается с айди в монгодб

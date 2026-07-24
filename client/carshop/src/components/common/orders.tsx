@@ -1,10 +1,11 @@
-import {type FC, useState, useEffect} from 'react'
-import {Link, useNavigate} from 'react-router-dom'
+import { type FC, useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { refreshAccessToken } from '../utils/auth'
 import './orders.css'
 
 interface Order {
     _id: string
-    carId: {brand: string; model: string}
+    carId: { brand: string; model: string }
     date: string
     status: 'completed' | 'pending'
     amount: number
@@ -13,31 +14,67 @@ interface Order {
 const Orders: FC = () => {
     const navigate = useNavigate()
     const [orders, setOrders] = useState<Order[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-    const fetchOrders = async () => {
-        try {
-            const token = localStorage.getItem('accessToken')
+        const fetchOrders = async () => {
+            try {
+                const token = localStorage.getItem('accessToken')
 
-            if (!token) {
-                console.log("no token")
-                navigate("/login")
-                return
+                if (!token) {
+                    navigate("/login")
+                    return
+                }
+
+                setLoading(true)
+                setError(null)
+
+                let response = await fetch('http://localhost:3000/orders/user-orders', {
+                    method: "GET",
+                    headers: { "Authorization": `Bearer ${token}` }
+                })
+
+                // Если токен протух — пробуем обновить
+                if (response.status === 401) {
+                    const newToken = await refreshAccessToken()
+                    if (!newToken) {
+                        navigate("/login")
+                        return
+                    }
+                    // Повторяем запрос с новым токеном
+                    response = await fetch('http://localhost:3000/orders/user-orders', {
+                        method: "GET",
+                        headers: { "Authorization": `Bearer ${newToken}` }
+                    })
+                }
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`)
+                }
+
+                const result = await response.json()
+
+                // Защита: если бэк вернул не то, что ожидаем
+                if (Array.isArray(result.orders)) {
+                    setOrders(result.orders)
+                } else if (Array.isArray(result)) {
+                    setOrders(result)
+                } else {
+                    console.warn("Unexpected format:", result)
+                    setOrders([])
+                }
+                console.log("orders:", result)
+            } catch (error) {
+                console.error("Error loading orders:", error)
+                setError("Error loading orders. Please try again later.")
+            } finally {
+                setLoading(false)
             }
-
-            const response = await fetch('http://localhost:3000/orders/user-orders', {
-                method: "GET",
-                headers: {"Authorization": `Bearer ${token}` }
-            })
-            const result = await response.json()
-            setOrders(result.orders)
-            console.log("orders:", result)
-        } catch (error) {
-            console.error(error)
         }
-    }
-    fetchOrders()
-}, [])
+        fetchOrders()
+    }, [navigate])
+
 
     return (
         <div className="page">
@@ -56,56 +93,48 @@ const Orders: FC = () => {
                 </div>
 
                 <div className="orders-table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Car Model</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {orders.length > 0 ? orders.map((order) => (
-                                <tr key={order._id}>
-                                    <td className="order-id">#{order._id}</td>
-                                    <td>{order.carId?.brand} {order.carId?.model}</td>
-                                    <td>{order.date}</td>
-                                    <td>
-                                        <span className={`status-pill status-${order.status}`}>
-                                            {order.status}
-                                        </span>
-                                    </td>
-                                    <td className="price-cell">${order.amount}</td>
+                    {loading ? (
+                        <p style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
+                            Загружаем заказы...
+                        </p>
+                    ) : error ? (
+                        <p style={{ textAlign: 'center', padding: '20px', color: 'red' }}>
+                            {error}
+                        </p>
+                    ) : (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Car Model</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Amount</th>
                                 </tr>
-                            )) : (
-                                <>
-                                    <tr>
-                                        <td className="order-id">I DONT KNOWWWW</td>
-                                        <td>namee</td>
-                                        <td>date</td>
-                                        <td><span className="status-pill status-completed">Completed</span></td>
-                                        <td className="price-cell">$0</td>
+                            </thead>
+                            <tbody>
+                                {orders.length > 0 ? orders.map((order) => (
+                                    <tr key={order._id}>
+                                        <td className="order-id">#{order._id}</td>
+                                        <td>{order.carId?.brand} {order.carId?.model}</td>
+                                        <td>{order.date}</td>
+                                        <td>
+                                            <span className={`status-pill status-${order.status}`}>
+                                                {order.status}
+                                            </span>
+                                        </td>
+                                        <td className="price-cell">${order.amount}</td>
                                     </tr>
+                                )) : (
                                     <tr>
-                                        <td className="order-id">TALULA</td>
-                                        <td>name2</td>
-                                        <td>date2</td>
-                                        <td><span className="status-pill status-completed">Completed</span></td>
-                                        <td className="price-cell">0</td>
+                                        <td colSpan={5} style={{ textAlign: 'center', padding: '30px', color: '#888' }}>
+                                            У вас пока нет заказов
+                                        </td>
                                     </tr>
-                                    <tr>
-                                        <td className="order-id">Privet Barbi hochech orbit? da nu evo on zhe bez sahara! a I barbie girl</td>
-                                        <td>name3</td>
-                                        <td>date3</td>
-                                        <td><span className="status-pill status-pending">Pending</span></td>
-                                        <td className="price-cell">$0</td>
-                                    </tr>
-                                </>
-                            )}
-                        </tbody>
-                    </table>
+                                )}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             </div>
 
