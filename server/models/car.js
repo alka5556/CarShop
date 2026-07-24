@@ -16,6 +16,10 @@ const carSchema = new mongoose.Schema({
     price: {
         type: Number,
         required: true
+    },
+        imageUrl: {
+        type: String,
+        default: ""
     }
 })    
 

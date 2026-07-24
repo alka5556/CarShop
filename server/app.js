@@ -3,6 +3,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const path = require('path')
 require('dotenv').config()
 
 const app = express()
@@ -17,6 +18,7 @@ db.once('open', () => console.log('connected to mongo')) // Сработает �
 
 app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }))
 app.use(bodyParser.json())
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 app.use((req, res, next) => {
     console.log('REQUEST:', req.method, req.url)

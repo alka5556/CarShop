@@ -6,6 +6,7 @@ import Login from './components/common/login'
 import Orders from './components/common/orders'
 import Profile from './components/common/profile'
 import Cart from './components/common/cart'
+import AdminPanel from './components/common/adminpanel'
 
 
 const App: FC = () => {
@@ -18,6 +19,7 @@ const App: FC = () => {
                 <Route path='/orders' element={<Orders />} />
                 <Route path='/profile' element={<Profile />} />
                 <Route path='/cart' element={<Cart />} />
+                <Route path="/admin" element={<AdminPanel />} />
             </Routes>
         </BrowserRouter>
     )

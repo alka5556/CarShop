@@ -144,6 +144,11 @@ const Home: FC = () => {
                     <Link to="/">Home</Link>
                     <Link to="/profile">Profile</Link>
                     <Link to="/cart">Cart</Link>
+                    {localStorage.getItem("userRole") === "admin" && (
+                    <Link to="/admin" style={{ color: '#c8102e', fontWeight: 'bold' }}>
+                            Admin Panel
+                    </Link>
+                    )}
                     {isLogged ? (
                         <button onClick={logout} className="logout-btn">Log out</button>
                     ) : (
