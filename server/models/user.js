@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin'],  // монгодб разрешает ТОЛЬКО эти два значения
         default: 'user'      // если при регистрации не указать роль то автоматически будет 'user'
     },
+        avatar: {
+        type: String,
+        default: ''
+    },
     refreshTokens: [{ //массив токенов
         type: String 
     }]

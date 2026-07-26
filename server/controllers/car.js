@@ -3,7 +3,11 @@ const mongoose = require('mongoose')
 
 exports.createCar = async (req, res) => {
   try {
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : ""
+    // Используем base из upload.js для полного URL
+    const { base } = require('../middleware/upload')
+    
+    // Если файл есть, создаем полный URL, иначе пустая строка
+    const imageUrl = req.file ? `${base}uploads/${req.file.filename}` : ""
     const car = new Car({
       brand: req.body.brand,
       model: req.body.model,

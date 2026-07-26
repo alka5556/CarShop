@@ -166,3 +166,24 @@ exports.profile = async (req, res, next) => {
         next(error)
     }
 }
+
+exports.uploadAvatar = async (req, res, next) => {
+
+    try {
+        const { base } = require('../middleware/upload')
+        // Проверяем, что файл был загружен
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' })
+        }
+        // Создаем полный URL для аватара
+        const avatarUrl = `${base}uploads/${req.file.filename}`
+        // Обовляем пользователя в базе данных
+        const user = await User.findByIdAndUpdate(
+            req.user.id, {avatar: avatarUrl}, {new: true}).select('-refreshTokens -password')
+        res.json({ 
+            success: true, user 
+        })
+    } catch (error) {
+        next(error)
+    }
+}

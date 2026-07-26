@@ -11,6 +11,7 @@ interface CartItem {
         model: string
         year: number
         price: number
+        imageUrl?: string
     }
     quantity: number //сколько штук этой машины в корзине
 }
@@ -106,7 +107,7 @@ const Cart: FC = () => {
             }
 
             // Удаляем из стейта только если сервер подтвердил
-            setCartItems(cartItems.filter((item) => item._id !== id)) //беру те машины, которые сейчас лежат в корзине, фильтрую их и выкидываю нахер ту, у которой совпал айди (которую мы удалили), а оставшиеся машины кладу обратно в корзину и обновляю экран
+            setCartItems(prevItems => prevItems.filter((item) => item._id !== id)) //беру те машины, которые сейчас лежат в корзине, фильтрую их и выкидываю нахер ту, у которой совпал айди (которую мы удалили), а оставшиеся машины кладу обратно в корзину и обновляю экран
             console.log(`Car with ID ${id} deleted`)
 
         } catch (error) {
@@ -115,11 +116,13 @@ const Cart: FC = () => {
         }
     }
 
-    // Подсчёт общей суммы
+    // Подсчёт общей суммы (с защитой от ошибок)
     const total = cartItems.reduce((sum, item) => {
-        return sum + (item.carId?.price ?? 0) * item.quantity
+        // Если carId - это объект (благодаря populate на бэкенде), берем цену. Иначе 0.
+        const price = typeof item.carId === 'object' ? (item.carId.price || 0) : 0
+        return sum + (price * (item.quantity || 1))
     }, 0)
-
+    
     // Оформление заказа
     const onCheckout = async () => {
         if (!window.confirm("Оформить заказ?")) return
@@ -221,7 +224,19 @@ const Cart: FC = () => {
                         {cartItems.length > 0 ? (
                             cartItems.map((item) => (
                                 <div className="cart-item" key={item._id}>
-                                    <div className="car-img-placeholder">img</div>
+                                    <div className="car-img-placeholder" style={{ width: '120px', height: '80px', 
+                                        background: '#f0f0f0', borderRadius: '6px', overflow: 'hidden', 
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        {item.carId?.imageUrl ? (
+                                            <img 
+                                            src={item.carId.imageUrl} 
+                                            alt={item.carId.model} 
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                            />
+                                        ) : (
+                                            <span style={{ color: '#999', fontSize: '12px' }}>No Image</span>
+                                        )}
+                                    </div>
                                     <div className="item-info">
                                        <h3>{item.carId?.brand ?? 'Unknown'} {item.carId?.model ?? 'Car'}</h3>
                                        <p>Year: {item.carId?.year ?? '—'}</p>

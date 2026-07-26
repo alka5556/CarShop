@@ -23,7 +23,7 @@ exports.createOrder = async (req, res, next) => {
 // мои заказы
 exports.getMyOrders = async (req, res, next) => {
     try {
-        const orders = await Order.find({userId: req.user.id}).populate("carId", "brand model year price")//популейт полные данные машины выодит пон. Ищем все заказы где userId совпадает с айди из токена то есть только МОИ заказы.
+        const orders = await Order.find({userId: req.user.id}).populate("carId", "brand model year price imageUrl")//популейт полные данные машины выодит пон. Ищем все заказы где userId совпадает с айди из токена то есть только МОИ заказы.
         res.status(200).json({success: true, orders}) //пользователь получает найденные заказы
     } catch (error) {
         next(error)

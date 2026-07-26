@@ -10,6 +10,7 @@ interface Car {
     model: string
     year: number
     price: number
+    imageUrl?: string 
 }
 
 const Home: FC = () => {
@@ -209,7 +210,20 @@ const Home: FC = () => {
 
                     {!loading && !error && cars.length > 0 && cars.map((car) => (
                         <div className="car-card" key={car._id}>
-                            <div className="car-image"></div>
+                            <div className="car-image">
+                                {car.imageUrl ? (
+                                    <img 
+                                        src={car.imageUrl} 
+                                        alt={car.model} 
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                    />
+                                ) : (
+                                    <div style={{ width: '100%', height: '100%', background: '#ccc', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666' }}>
+                                        No Image
+                                    </div>
+                                )}
+                            </div>
+                            
                             <div className="car-info">
                                 <h3>{car.brand} {car.model}</h3>
                                 <p>Year: {car.year}</p>

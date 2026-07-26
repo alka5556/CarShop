@@ -1,7 +1,10 @@
-import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react'
+import { useState, useEffect, type ChangeEvent, type FormEvent } from 'react' //useState нужен для хранения данных на странице 
+//(список машин, текст в полях формы), а useEffect чтобы выполнить код автоматически при 
+// открытии страницы.
 import { Link, useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faImage, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons'
+import './AdminPanel.css'
 
 interface Car {
     _id: string
@@ -9,7 +12,7 @@ interface Car {
     model: string
     year: number
     price: number
-    imageUrl?: string
+    imageUrl?: string //знак вопроса необязательное поел, тип у машины как может быть фотка так и нет
 }
 
 interface FormData {
@@ -17,18 +20,18 @@ interface FormData {
     model: string
     year: string
     price: string
-    image: File | null
+    image: File | null //хранит либо файл либо нал если нет ничего
 }
 
 const AdminPanel = () => {
     const navigate = useNavigate()
-    const [cars, setCars] = useState<Car[]>([])
-    const [loading, setLoading] = useState<boolean>(true)
-    const [error, setError] = useState<string | null>(null) // <-- ИСПРАВЛЕНО: string | null
-    const [showForm, setShowForm] = useState<boolean>(false)
-    const [preview, setPreview] = useState<string | null>(null)
+    const [cars, setCars] = useState<Car[]>([]) //спсико машин (изначально пустой массив)
+    const [loading, setLoading] = useState<boolean>(true) //крутилка загрузки (включена по умолчанию)
+    const [error, setError] = useState<string | null>(null) //текст ошибки, если бэкенд упадет либо налл
+    const [showForm, setShowForm] = useState<boolean>(false) //спрятана или показана форма добавления
+    const [preview, setPreview] = useState<string | null>(null)//ссылка на превью картинки в браузере
     
-    const [formData, setFormData] = useState<FormData>({
+    const [formData, setFormData] = useState<FormData>({ //данные внутри полей формы
         brand: '',
         model: '',
         year: '',
@@ -37,7 +40,7 @@ const AdminPanel = () => {
     })
 
     useEffect(() => {
-        const role = localStorage.getItem("userRole")
+        const role = localStorage.getItem("userRole") //лезет в память компа локалсторадж и проверяет роль
         if (role !== "admin") {
             navigate("/")
             return
@@ -63,26 +66,34 @@ const AdminPanel = () => {
         }
     }
 
-    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0]
+    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => { //Это объявление функции, которая срабатывает, когда 
+        //пользователь нажимает кнопку «Выбрать файл» и выбирает картинку.
+        // e объект события (event). В нем лежит вся информация о том, что произошло.
+        // React.ChangeEvent<HTMLInputElement> это просто строгое объяснение для TypeScript: «Внимание, это функция для инпута (поля ввода), в котором что-то изменилось (change)».
+        const file = e.target.files?.[0] //массив в котором лежит ровно один файл
         if (file) {
-            setFormData(prev => ({ ...prev, image: file }))
-            setPreview(URL.createObjectURL(file))
+            setFormData(prev => ({ ...prev, image: file })) //мы берем наш стейт формы, сохраняем всё, 
+            //что там уже было написано (...prev — марка, модель) и просто просим прикрепить к этим данным фотку
+            setPreview(URL.createObjectURL(file)) //превью фотки в браузере до сохранения на сервере
         }
     }
 
     const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault()
+        e.preventDefault() //запрещаем браузеру перезагружать страницу при отправке
         
         try {
             const token = localStorage.getItem("accessToken")
-            const data = new FormData()
+            //джейсон не умеет передавать картинки поэтомуу создаил для этого был создан формат форм
+            const data = new FormData() // Создаем специальный объект(коробку) FormData (ведь мы шлем файл!)
             data.append('brand', formData.brand)
             data.append('model', formData.model)
             data.append('year', formData.year)
             data.append('price', formData.price)
             if (formData.image) {
-                data.append('image', formData.image)
+            data.append('image', formData.image) //если админ прикрепил файл,
+            // мы берем этот тяжелый файл картинки и тоже бережно кладем в эту коробку под именем 'image'.
+            //Бэкенд (тот самый multer) 
+            //поймает эту коробку, найдет там ярлык 'image', достанет картинку и сохранит на диск
             }
 
             const response = await fetch('http://localhost:3000/cars', {
@@ -96,15 +107,15 @@ const AdminPanel = () => {
             if (!response.ok) throw new Error('Ошибка добавления')
             
             alert('Машина успешно добавлена!')
-            setShowForm(false)
+            setShowForm(false) // Прячем форму обратно
             setFormData({ brand: '', model: '', year: '', price: '', image: null })
-            setPreview(null)
-            fetchCars()
+            setPreview(null) // Стираем превью
+            fetchCars() // Перезагружаем список машин, чтобы новая сразу появилась на экране
         } catch (err) {
             setError("Не удалось добавить машину")
         }
     }
-
+//удаление машины
     const handleDelete = async (id: string) => {
         if (!window.confirm("Удалить эту машину?")) return
         
@@ -116,7 +127,7 @@ const AdminPanel = () => {
             })
 
             if (!response.ok) throw new Error('Ошибка удаления')
-            
+            //фильтр массива. убираем из списка на экране ту машину, которую только что удалили в базе
             setCars(cars.filter(car => car._id !== id))
         } catch (err) {
             console.error(err)
@@ -124,12 +135,20 @@ const AdminPanel = () => {
         }
     }
 
-    // Helper для доступа к полям формы
-    const handleFieldChange = (field: keyof FormData, value: string) => {
-        setFormData(prev => ({ ...prev, [field]: value }))
+    //Эта функция нужна для того, чтобы одной строчкой кода обновлять ЛЮБОЕ поле формы, 
+    //не создавая отдельную функцию для каждого поля (отдельно для марки, отдельно для модели и тд)
+    const handleFieldChange = (field: keyof FormData, value: string) => { //кей оф защита от опечаток нельзя написать условно brend
+        //field: Это имя поля, которое мы хотим изменить (например, 'brand', 'model', 'year' или 'price').
+        setFormData(prev => ({ ...prev, [field]: value })) //берет ранее сохраненные файлы модель там марка,
+        //Робот берет бланк (...prev — чтобы не стереть то, что уже заполнено в других графах).
+        // Квадратные скобки [field] — это динамический указатель. 
+        // Робот смотрит, какое слово пришло в переменную field.
+        // Если ты вызвала функцию так: handleFieldChange('brand', 'Audi'), робот стирает 
+        // слово field, подставляет вместо него brand и пишет туда 'Audi'. 
+        // Получается: brand: 'Audi'.
     }
 
-    return (
+     return (
         <div className="page">
             <nav className="nav">
                 <Link to="/" className="logo">DRIVE<span>LUX</span></Link>
@@ -141,167 +160,102 @@ const AdminPanel = () => {
                 </div>
             </nav>
 
-            <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
-                <h1>Admin Panel</h1>
+            <div className="admin-container">
+                <h1 className="admin-title">Admin Panel</h1>
 
                 <button
                     onClick={() => setShowForm(!showForm)}
-                    style={{ 
-                        background: '#c8102e', 
-                        color: 'white', 
-                        padding: '10px 20px', 
-                        border: 'none', 
-                        borderRadius: '4px', 
-                        cursor: 'pointer',
-                        marginBottom: '20px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                    }}
+                    className="add-car-btn"
                 >
                     <FontAwesomeIcon icon={faPlus} />
                     {showForm ? 'Отмена' : 'Добавить машину'}
                 </button>
 
                 {showForm && (
-                    <form onSubmit={handleSubmit} style={{ 
-                        marginBottom: '30px', 
-                        padding: '20px', 
-                        border: '1px solid #ccc', 
-                        borderRadius: '8px',
-                        background: '#f9f9f9'
-                    }}>
+                    <form onSubmit={handleSubmit} className="add-form">
                         <h3>Новая машина</h3>
                         
-                        <div style={{ 
-                            display: 'flex', 
-                            justifyContent: 'center', 
-                            position: 'relative',
-                            marginBottom: '20px'
-                        }}>
-                            <div style={{ height: '200px', width: '200px' }}>
+                        <div className="image-preview-wrapper">
+                            <div className="image-preview-box">
                                 {preview ? (
                                     <img 
-                                        style={{ height: '200px', width: '200px', objectFit: 'cover', borderRadius: '8px' }} 
+                                        className="preview-image" 
                                         src={preview} 
                                         alt="Preview" 
                                     />
                                 ) : (
-                                    <div style={{ 
-                                        height: '200px', 
-                                        width: '200px', 
-                                        background: '#ddd', 
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        borderRadius: '8px'
-                                    }}>
+                                    <div className="preview-placeholder">
                                         <FontAwesomeIcon icon={faImage} size="3x" color="#999" />
                                     </div>
                                 )}
                             </div>
-                            <div style={{ position: 'absolute', bottom: '0', right: '0' }}>
-                                <label style={{ cursor: 'pointer' }}>
-                                    <div style={{ 
-                                        background: 'white', 
-                                        padding: '8px', 
-                                        borderRadius: '50%',
-                                        boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
-                                    }}>
+                            <div className="image-upload-btn">
+                                <label className="upload-label">
+                                    <div className="upload-icon-circle">
                                         <FontAwesomeIcon icon={faImage} className="fa-xl" />
                                     </div>
                                     <input
                                         type="file"
                                         accept="image/*"
                                         onChange={handleImageChange}
-                                        style={{ display: 'none' }}
+                                        className="hidden-file-input"
                                     />
                                 </label>
                             </div>
                         </div>
 
-                        {/* Поля формы - ИСПРАВЛЕНО */}
-                        <div style={{ marginBottom: '12px' }}>
-                            <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
-                                Марка
-                            </label>
+                        <div className="form-field">
+                            <label>Марка</label>
                             <input
                                 type="text"
                                 value={formData.brand}
                                 onChange={(e) => handleFieldChange('brand', e.target.value)}
                                 required
                                 placeholder="Например: BMW"
-                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                             />
                         </div>
 
-                        <div style={{ marginBottom: '12px' }}>
-                            <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
-                                Модель
-                            </label>
+                        <div className="form-field">
+                            <label>Модель</label>
                             <input
                                 type="text"
                                 value={formData.model}
                                 onChange={(e) => handleFieldChange('model', e.target.value)}
                                 required
                                 placeholder="Например: X5"
-                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                             />
                         </div>
 
-                        <div style={{ marginBottom: '12px' }}>
-                            <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
-                                Год
-                            </label>
+                        <div className="form-field">
+                            <label>Год</label>
                             <input
                                 type="number"
                                 value={formData.year}
                                 onChange={(e) => handleFieldChange('year', e.target.value)}
                                 required
                                 placeholder="2023"
-                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                             />
                         </div>
 
-                        <div style={{ marginBottom: '12px' }}>
-                            <label style={{ display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
-                                Цена
-                            </label>
+                        <div className="form-field">
+                            <label>Цена</label>
                             <input
                                 type="number"
                                 value={formData.price}
                                 onChange={(e) => handleFieldChange('price', e.target.value)}
                                 required
                                 placeholder="50000"
-                                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
                             />
                         </div>
 
-                        <button 
-                            type="submit" 
-                            style={{ 
-                                background: '#28a745', 
-                                color: 'white', 
-                                padding: '10px 20px', 
-                                border: 'none', 
-                                borderRadius: '4px', 
-                                cursor: 'pointer',
-                                width: '100%'
-                            }}
-                        >
+                        <button type="submit" className="save-btn">
                             Сохранить
                         </button>
                     </form>
                 )}
 
                 {error && (
-                    <div style={{ 
-                        color: 'red', 
-                        marginBottom: '16px', 
-                        padding: '10px', 
-                        background: '#ffe6e6', 
-                        borderRadius: '4px' 
-                    }}>
+                    <div className="error-message">
                         {error}
                     </div>
                 )}
@@ -310,54 +264,30 @@ const AdminPanel = () => {
                     <p>Загрузка...</p>
                 ) : (
                     <>
-                        <h2>Все машины ({cars.length})</h2>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                        <h2 className="admin-title">Все машины ({cars.length})</h2>
+                        <div className="car-grid">
                             {cars.map((car) => (
-                                <div key={car._id} style={{ 
-                                    border: '1px solid #ddd', 
-                                    borderRadius: '8px', 
-                                    overflow: 'hidden',
-                                    background: 'white'
-                                }}>
-                                    <div style={{ height: '200px', background: '#f0f0f0' }}>
+                                <div className="car-card" key={car._id}>
+                                    <div className="car-image-wrapper">
                                         {car.imageUrl ? (
                                             <img 
-                                                src={`http://localhost:3000${car.imageUrl}`} 
+                                                src={car.imageUrl} 
                                                 alt={car.model}
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                className="car-image"
                                             />
                                         ) : (
-                                            <div style={{ 
-                                                height: '100%', 
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                color: '#999'
-                                            }}>
+                                            <div className="no-image">
                                                 <FontAwesomeIcon icon={faImage} size="2x" />
                                             </div>
                                         )}
                                     </div>
-                                    <div style={{ padding: '15px' }}>
-                                        <h3>{car.brand} {car.model}</h3>
-                                        <p>Год: {car.year}</p>
-                                        <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#c8102e' }}>
-                                            ${car.price}
-                                        </p>
+                                    <div className="car-info">
+                                        <h3 className="car-title">{car.brand} {car.model}</h3>
+                                        <p className="car-details">Год: {car.year}</p>
+                                        <p className="car-price">${car.price}</p>
                                         <button
                                             onClick={() => handleDelete(car._id)}
-                                            style={{ 
-                                                background: '#dc3545', 
-                                                color: 'white', 
-                                                border: 'none', 
-                                                padding: '8px 16px', 
-                                                borderRadius: '4px', 
-                                                cursor: 'pointer',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: '6px',
-                                                marginTop: '10px'
-                                            }}
+                                            className="delete-btn"
                                         >
                                             <FontAwesomeIcon icon={faTrash} />
                                             Удалить

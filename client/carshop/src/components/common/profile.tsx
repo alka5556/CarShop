@@ -1,4 +1,4 @@
-import { type FC, useState, useEffect } from 'react'
+import { type FC, useState, useEffect, type ChangeEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { refreshAccessToken } from '../utils/auth'
 import './profile.css'
@@ -7,11 +7,13 @@ interface User {
     _id: string
     username: string
     email: string
+    avatar?: string
 }
 
 interface GarageCar {
     _id: string
-    name: string
+    carName: string
+    imageUrl?: string
     addedDate: string
     status: string
 }
@@ -19,12 +21,12 @@ interface GarageCar {
 const Profile: FC = () => {
     const navigate = useNavigate()
     const [user, setUser] = useState<User | null>(null)
-    const [garageCars] = useState<GarageCar[]>([])
+    const [garageCars, setGarageCars] = useState<GarageCar[]>([]) 
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => { //нужен только если действие должно произойти автоматически
-        const fetchProfile = async () => {
+        const fetchProfileAndGarage = async () => {
             try {
                 const token = localStorage.getItem('accessToken')
 
@@ -35,7 +37,7 @@ const Profile: FC = () => {
 
                 setLoading(true)
                 setError(null)
-
+//получаем данные пользователя имя пчота
                 let response = await fetch("http://localhost:3000/users/profile", {
                     method: "GET",
                     headers: { "Authorization": `Bearer ${token}` }
@@ -68,16 +70,101 @@ const Profile: FC = () => {
                     console.warn("Server did not return user:", result)
                     setError("Server did not return user. Please try again later")
                 }
-                console.log("profile loaded:", result)
+                 console.log("profile loaded:", result)
+
+                // 2. Получаем заказы (Гараж) по правильному адресу
+                const ordersResponse = await fetch("http://localhost:3000/orders/user-orders", { 
+                    method: "GET",
+                    headers: { "Authorization": `Bearer ${token}` }
+                })
+
+                if (ordersResponse.ok) {
+                    const resultOrders = await ordersResponse.json()
+                    const ordersList = resultOrders.orders || []
+                    
+                    const mappedCars: GarageCar[] = ordersList.map((order: any) => {
+                        const car = order.carId 
+                        const carName = typeof car === 'object' ? `${car.brand} ${car.model}` : "Автомобиль"
+                        const imageUrl = typeof car === 'object' ? car.imageUrl : undefined
+                        
+                        let statusText = "In processing"
+                        if (order.status === 'completed' || order.status === 'delivered') statusText = "In garage"
+                        if (order.status === 'pending') statusText = "Delivering"
+
+                        return {
+                            _id: order._id,
+                            carName: carName,
+                            imageUrl: imageUrl,
+                            addedDate: order.createdAt,
+                            status: statusText
+                        }
+                    })
+                    
+                    setGarageCars(mappedCars)
+                }
+
+
             } catch (error) {
                 console.error("Profile loading error:", error)
-                setError("Не удалось загрузить профиль. Попробуйте позже.")
+                setError("Profile loading error. Please try again later")
             } finally {
                 setLoading(false)
             }
         }
-        fetchProfile()
+        fetchProfileAndGarage()
     }, [navigate])
+
+        const handleAvatarChange = async (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        try {
+            const token = localStorage.getItem('accessToken')
+            if (!token) {
+                navigate('/login')
+                return
+            }
+
+            const formData = new FormData()
+            formData.append('avatar', file)
+
+            const response = await fetch('http://localhost:3000/users/avatar', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData
+            })
+
+            if (response.status === 401) {
+                const newToken = await refreshAccessToken()
+                if (!newToken) {
+                    navigate('/login')
+                    return
+                }
+                const retryResponse = await fetch('http://localhost:3000/users/avatar', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${newToken}`
+                    },
+                    body: formData
+                })
+
+                if (retryResponse.ok) {
+                    const result = await retryResponse.json()
+                    setUser(result.user)
+                }
+            } else if (response.ok) {
+                const result = await response.json()
+                setUser(result.user)
+            } else {
+                alert('Не удалось загрузить фото')
+            }
+        } catch (error) {
+            console.error('Avatar upload error:', error)
+            alert('Ошибка при загрузке фото')
+        }
+    }
 
     const logout = async () => {
         const refreshToken = localStorage.getItem("refreshToken")
@@ -126,10 +213,33 @@ const Profile: FC = () => {
                 ) : (
                     <>
                         <div className="welcome-card">
-                            <div className="avatar">👤</div>
-                            <h1>Welcome Back{user ? `, ${user.username}` : ""}!</h1>
-                            <p>You have successfully accessed your DriveLux fleet.</p>
-                            <p className="user-email">{user?.email}</p>
+                            <div className="avatar-section">
+                                <div className="avatar-wrapper">
+                                    {user?.avatar ? (
+                                        <img
+                                            src={user.avatar}
+                                            alt="Avatar"
+                                            className="avatar-image"
+                                        />
+                                    ) : (
+                                        <div className="avatar-placeholder">👤</div>
+                                    )}
+
+                                    <label className="upload-avatar-btn">
+                                        <span>📷</span>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleAvatarChange}
+                                            style={{ display: 'none' }}
+                                        />
+                                    </label>
+                                </div>
+
+                                <h1>Welcome Back{user ? `, ${user.username}` : ""}!</h1>
+                                <p>You have successfully accessed your DriveLux fleet.</p>
+                                <p className="user-email">{user?.email}</p>
+                            </div>
                         </div>
 
                         <div className="garage-section">
@@ -137,28 +247,41 @@ const Profile: FC = () => {
                             <div className="garage-grid">
                                 {garageCars.length > 0 ? garageCars.map((car) => (
                                     <div className="car-item" key={car._id}>
-                                        <h3>{car.name}</h3>
-                                        <p>Added: {car.addedDate}</p>
-                                        <span className="status">{car.status}</span>
+                                        {car.imageUrl ? (
+                                            <img
+                                                src={car.imageUrl}
+                                                alt={car.carName}
+                                                style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '6px', marginBottom: '12px' }}
+                                            />
+                                        ) : (
+                                            <div style={{ width: '100%', height: '140px', background: '#eee', borderRadius: '6px', marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>
+                                                No Image
+                                            </div>
+                                        )}
+
+                                        <h3>{car.carName}</h3>
+                                        <p style={{ color: '#666', fontSize: '0.9rem', margin: '4px 0 12px 0' }}>
+                                            Added: {car.addedDate}
+                                        </p>
+                                        <span className={`status-badge ${car.status === 'В гараже' ? 'status-success' : 'status-pending'}`}>
+                                            {car.status}
+                                        </span>
                                     </div>
                                 )) : (
-                                    <>
-                                        <div className="car-item">
-                                            <h3>carname1</h3>
-                                            <p>Added:</p>
-                                            <span className="status">In Garage</span>
-                                        </div>
-                                        <div className="car-item">
-                                            <h3>carname2</h3>
-                                            <p>Added:</p>
-                                            <span className="status">In Service</span>
-                                        </div>
-                                        <div className="car-item">
-                                            <h3>carname3</h3>
-                                            <p>Added:</p>
-                                            <span className="status">In Garage</span>
-                                        </div>
-                                    </>
+                                    <div className="empty-garage" style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: '#666', background: '#f9f9f9', borderRadius: '8px' }}>
+                                        <p style={{ fontSize: '1.1rem', marginBottom: '15px' }}>Ваш гараж пока пуст.</p>
+                                        <Link to="/" style={{
+                                            display: 'inline-block',
+                                            background: '#c8102e',
+                                            color: 'white',
+                                            padding: '10px 20px',
+                                            borderRadius: '6px',
+                                            textDecoration: 'none',
+                                            fontWeight: 'bold'
+                                        }}>
+                                            Выбрать автомобиль
+                                        </Link>
+                                    </div>
                                 )}
                             </div>
                         </div>

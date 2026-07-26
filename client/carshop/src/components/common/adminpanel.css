@@ -1,0 +1,217 @@
+.admin-container {
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: #333;
+}
+
+.admin-title {
+    margin-bottom: 20px;
+    color: #111;
+    font-size: 28px;
+}
+
+.add-car-btn {
+    background: #c8102e;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+}
+
+.add-car-btn:hover {
+    background: #a00d24;
+}
+
+.add-form {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.add-form h3 {
+    margin-top: 0;
+    color: #111;
+}
+
+.image-preview-wrapper {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.image-preview-box {
+    height: 200px;
+    width: 200px;
+}
+
+.preview-image {
+    height: 200px;
+    width: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.preview-placeholder {
+    height: 200px;
+    width: 200px;
+    background: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.image-upload-btn {
+    position: absolute;
+    bottom: 0;
+    right: calc(50% - 120px);
+}
+
+.upload-label {
+    cursor: pointer;
+}
+
+.upload-icon-circle {
+    background: white;
+    padding: 8px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.hidden-file-input {
+    display: none;
+}
+
+.form-field {
+    margin-bottom: 12px;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: bold;
+    color: #333;
+}
+
+.form-field input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.save-btn {
+    background: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+}
+
+.save-btn:hover {
+    background: #218838;
+}
+
+.error-message {
+    color: red;
+    margin-bottom: 16px;
+    padding: 10px;
+    background: #ffe6e6;
+    border-radius: 4px;
+}
+
+.car-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.car-card {
+    border: 1px solid #eee;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+
+.car-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.car-image-wrapper {
+    height: 200px;
+    background: #f8f9fa;
+}
+
+.car-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.no-image {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+}
+
+.car-info {
+    padding: 20px;
+    color: #333;
+}
+
+.car-title {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #111;
+}
+
+.car-details {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.car-price {
+    font-size: 22px;
+    font-weight: bold;
+    color: #c8102e;
+    margin-bottom: 15px;
+}
+
+.delete-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.delete-btn:hover {
+    background: #c82333;
+}
