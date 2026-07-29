@@ -1,9 +1,10 @@
+import { API_URL } from '../../config'
 export const refreshAccessToken = async (): Promise<string | null> => {
     const refreshToken = localStorage.getItem("refreshToken")
     if (!refreshToken) return null
 
     try {
-        const response = await fetch('http://localhost:3000/users/refresh', {
+        const response = await fetch(`${API_URL}/users/refresh`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ refreshToken })

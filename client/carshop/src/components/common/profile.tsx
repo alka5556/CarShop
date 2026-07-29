@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { refreshAccessToken } from '../utils/auth'
 import { useAuth } from '../../context/AuthContext'
 import './profile.css'
+import { API_URL, resolveImageUrl } from '../../config'
 
 interface User {
     _id: string
@@ -38,7 +39,7 @@ const Profile: FC = () => {
                 setLoading(true)
                 setError(null)
 //получаем данные пользователя имя пчота
-                let response = await fetch("http://localhost:3000/users/profile", {
+                let response = await fetch(`${API_URL}/users/profile`, {
                     method: "GET",
                     headers: { "Authorization": `Bearer ${accessToken}` }
                 })
@@ -51,7 +52,7 @@ const Profile: FC = () => {
                         return
                     }
                     // Повторяем запрос с новым токеном
-                    response = await fetch("http://localhost:3000/users/profile", {
+                    response = await fetch(`${API_URL}/users/profile`, {
                         method: "GET",
                         headers: { "Authorization": `Bearer ${newToken}` }
                     })
@@ -73,7 +74,7 @@ const Profile: FC = () => {
                  console.log("profile loaded:", result)
 
                 // 2. Получаем заказы (Гараж) по правильному адресу
-                const ordersResponse = await fetch("http://localhost:3000/orders/user-orders", { 
+                const ordersResponse = await fetch(`${API_URL}/orders/user-orders`, { 
                     method: "GET",
                     headers: { "Authorization": `Bearer ${accessToken}` }
                 })
@@ -128,7 +129,7 @@ const Profile: FC = () => {
             const formData = new FormData()
             formData.append('avatar', file)
 
-            const response = await fetch('http://localhost:3000/users/avatar', {
+            const response = await fetch(`${API_URL}/users/avatar`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`
@@ -142,7 +143,7 @@ const Profile: FC = () => {
                     navigate('/login')
                     return
                 }
-                const retryResponse = await fetch('http://localhost:3000/users/avatar', {
+                const retryResponse = await fetch(`${API_URL}/users/avatar`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${newToken}`
@@ -199,7 +200,7 @@ const Profile: FC = () => {
                                 <div className="avatar-wrapper">
                                     {user?.avatar ? (
                                         <img
-                                            src={user.avatar}
+                                            src={resolveImageUrl(user.avatar)}
                                             alt="Avatar"
                                             className="avatar-image"
                                         />
@@ -231,7 +232,7 @@ const Profile: FC = () => {
                                     <div className="car-item" key={car._id}>
                                         {car.imageUrl ? (
                                             <img
-                                                src={car.imageUrl}
+                                                src={resolveImageUrl(car.imageUrl)}
                                                 alt={car.carName}
                                                 style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '6px', marginBottom: '12px' }}
                                             />

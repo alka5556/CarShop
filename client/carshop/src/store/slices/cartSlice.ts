@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import { refreshAccessToken } from '../../components/utils/auth';
+import { API_URL } from '../../config'
 
 export interface CartItem {
   _id: string; //Уникальный номер записи в корзине
@@ -69,7 +70,7 @@ export const fetchCart = createAsyncThunk<CartItem[], void, { rejectValue: strin
   'cart/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetchWithAuth('http://localhost:3000/cart', { method: 'GET' });
+      const response = await fetchWithAuth(`${API_URL}/cart`, { method: 'GET' });
       if (!response.ok) throw new Error('Ошибка загрузки корзины');
       const result = await response.json();
       return result.cartItems || [];
@@ -87,7 +88,7 @@ export const addItemToCart = createAsyncThunk<void, string, { rejectValue: strin
   'cart/addItem',
   async (carId, { rejectWithValue }) => {
     try {
-      const response = await fetchWithAuth('http://localhost:3000/cart', {
+      const response = await fetchWithAuth(`${API_URL}/cart`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ carId, quantity: 1 }),
@@ -108,7 +109,7 @@ export const removeCartItem = createAsyncThunk<string, string, { rejectValue: st
     // Второй string значит, что на старте курьеру нужно передать строку (ID товара для удаления).
   'cart/removeItem', async (id, { rejectWithValue }) => {
     try {
-      const response = await fetchWithAuth(`http://localhost:3000/cart/${id}`, { method: 'DELETE' });
+      const response = await fetchWithAuth(`${API_URL}/cart/${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Не удалось удалить');
       return id;
     } 
@@ -128,7 +129,7 @@ export const checkout = createAsyncThunk<void, CartItem[], { rejectValue: string
     try {
       // Сначала создаём все заказы
       for (const item of cartItems) { //Он будет по очереди брать каждый товар (item) из массива cartItems.
-        const response = await fetchWithAuth('http://localhost:3000/orders', {
+        const response = await fetchWithAuth(`${API_URL}/orders`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ carId: item.carId._id }),
@@ -139,7 +140,7 @@ export const checkout = createAsyncThunk<void, CartItem[], { rejectValue: string
       // Если все заказы созданы — чистим корзину (ошибки удаления тут не критичны)
       for (const item of cartItems) {
         try {
-          await fetchWithAuth(`http://localhost:3000/cart/${item._id}`, { method: 'DELETE' });
+          await fetchWithAuth(`${API_URL}/cart/${item._id}`, { method: 'DELETE' });
         } catch {
           console.warn(`Не удалось удалить ${item._id} из корзины`);
         }

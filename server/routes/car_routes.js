@@ -3,7 +3,7 @@ const express = require('express')
 const router = express.Router()
 const carController = require('../controllers/car')
 const {protect, authorize} = require('../middleware/authMiddleware')
-const { upload, base } = require('../middleware/upload')
+const { upload } = require('../middleware/upload')
 
 router.post("/", protect, authorize('admin'), upload.single('image'), carController.createCar) //протект берет токкен из заголовка Authorization: Bearer <token> и проверяет его валидность, если req user валидный то добавляет данные пользователя(айди, его роль) и передает следуюшему middleware
 //upload.single('image'): Парсит загруженный файл (фото)

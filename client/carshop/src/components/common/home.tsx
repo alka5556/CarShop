@@ -5,6 +5,7 @@ import { fetchCars } from '../../store/slices/carsSlice'
 import { addItemToCart } from '../../store/slices/cartSlice'
 import { useAuth } from '../../context/AuthContext'
 import './home.css'
+import { resolveImageUrl } from '../../config'
 
 const Home: FC = () => {
     const navigate = useNavigate()
@@ -122,7 +123,7 @@ const Home: FC = () => {
                             <div className="car-image">
                                 {car.imageUrl ? (
                                     <img
-                                        src={car.imageUrl}
+                                        src={resolveImageUrl(car.imageUrl)}
                                         alt={car.model}
                                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                     />

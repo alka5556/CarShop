@@ -7,7 +7,8 @@ import { faImage, faTrash, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import { fetchCars, addCar, deleteCar } from '../../store/slices/carsSlice'
 import { useAuth } from '../../context/AuthContext'
-import './AdminPanel.css'
+import './adminpanel.css'
+import { resolveImageUrl } from '../../config'
 
 interface FormData {
     brand: string
@@ -236,7 +237,7 @@ const AdminPanel = () => {
                                     <div className="car-image-wrapper">
                                         {car.imageUrl ? (
                                             <img
-                                                src={car.imageUrl}
+                                                src={resolveImageUrl(car.imageUrl)}
                                                 alt={car.model}
                                                 className="car-image"
                                             />

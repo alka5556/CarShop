@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { API_URL } from '../config'
 
 // 1. Типы данных
 export interface User {
@@ -55,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => { // chil
         setLoading(true) //нужно, чтобы заблокировать кнопку (показать "Signing in...") и пользователь не нажал её 10 раз подряд, пока ждет ответ от сервера.
 
         try {
-            const response = await fetch('http://localhost:3000/users/login', {
+            const response = await fetch(`${API_URL}/users/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -129,7 +130,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => { // chil
       }
  
       try {
-        const response = await fetch('http://localhost:3000/users/profile', {
+        const response = await fetch(`${API_URL}/users/profile`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
  

@@ -1,13 +1,12 @@
 const Car = require('../models/car')
 const mongoose = require('mongoose')
+const { saveImage } = require('../middleware/upload')
 
 exports.createCar = async (req, res) => {
   try {
-    // Используем base из upload.js для полного URL
-    const { base } = require('../middleware/upload')
-    
-    // Если файл есть, создаем полный URL, иначе пустая строка
-    const imageUrl = req.file ? `${base}uploads/${req.file.filename}` : ""
+    // saveImage сам решает, куда положить файл (Cloudinary или диск), и отдаёт готовую ссылку.
+    // Если файла нет — вернётся пустая строка.
+    const imageUrl = await saveImage(req.file)
     const car = new Car({
       brand: req.body.brand,
       model: req.body.model,

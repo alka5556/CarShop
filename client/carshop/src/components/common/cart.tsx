@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import { fetchCart, removeCartItem, checkout } from '../../store/slices/cartSlice'
 import { useAuth } from '../../context/AuthContext'
 import './cart.css'
+import { resolveImageUrl } from '../../config'
 
 const Cart: FC = () => {
     const navigate = useNavigate()
@@ -151,7 +152,7 @@ const Cart: FC = () => {
                                         >
                                             {item.carId.imageUrl ? (
                                                 <img
-                                                    src={item.carId.imageUrl}
+                                                    src={resolveImageUrl(item.carId.imageUrl)}
                                                     alt={item.carId.model}
                                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                                 />
