@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
+const {OAuth2Client} = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const generateTokens = (id) => {
     const random = Math.floor(Math.random() * 1000000)
@@ -185,5 +187,63 @@ exports.uploadAvatar = async (req, res, next) => {
         })
     } catch (error) {
         next(error)
+    }
+}
+
+exports.googleSignin = async (req, res, next) => {
+    const credential = req.body.credential;
+    
+    try {
+        // 1. Валидация токена
+        const ticket = await client.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+        
+        const payload = ticket.getPayload();
+        console.log("✅ Google Payload получен:", payload); 
+        
+        const email = payload?.email;
+        let user = await User.findOne({ 'email': email });
+        
+        // 2. Если пользователя нет, создаем его
+        if (user == null) {
+            console.log("🆕 Создаем нового пользователя из Google...");
+            user = await User.create({
+                'email': email,
+                'username': payload?.name || 'Google User', // Добавил username для надежности
+                'avatar': payload?.picture, // ИСПРАВЛЕНО: imgUrl -> avatar (как в uploadAvatar)
+                'password': 'google-signin'
+            });
+        } else {
+            console.log("✅ Пользователь найден в базе:", user.email);
+        }
+        
+        // 3. Генерация токенов (ИСПРАВЛЕНО: используем твою реальную функцию generateTokens)
+        const tokens = generateTokens(user._id); 
+        
+        // 4. Сохраняем refresh token в базу (как в обычном login)
+        user.refreshTokens = user.refreshTokens || [];
+        user.refreshTokens.push(tokens.refreshToken);
+        await user.save();
+        
+        // 5. Отправляем ответ (добавляем user для фронтенда, как в обычном login)
+        return res.status(200).json({
+            success: true,
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            user: {
+                _id: user._id,
+                username: user.username,
+                email: user.email,
+                role: user.role,
+                avatar: user.avatar
+            }
+        });
+        
+    } catch (err) {
+        // ДОБАВЛЕНО: чтобы мы наконец увидели реальную ошибку в терминале, если она есть
+        console.error("❌ Ошибка Google Signin:", err);
+        return res.status(400).json({ message: "error missing email or password" });
     }
 }

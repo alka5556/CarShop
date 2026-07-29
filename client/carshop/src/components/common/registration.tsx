@@ -36,7 +36,7 @@ const Registration: FC = () => {
 
             // Если сервер вернул ошибку — показываем её и НЕ редиректим
             if (!response.ok) {
-                setError(result.message || "Ошибка регистрации. Попробуйте ещё раз.")
+                setError(result.message || "Registration error. Please try again..")
                 return
             }
 
@@ -62,8 +62,8 @@ const Registration: FC = () => {
                         <label htmlFor="username">Username</label>
                         <input
                             {...register("username", {
-                                required: "Username обязателен",
-                                minLength: { value: 3, message: "Минимум 3 символа" }
+                                required: "Username required",
+                                minLength: { value: 3, message: "Minimum 3 symbols" }
                             })}
                             type="text"
                             id="username"
@@ -93,10 +93,10 @@ const Registration: FC = () => {
                         <label htmlFor="password">Password</label>
                         <input
                             {...register("password", {
-                                required: "Пароль обязателен",
+                                required: "Password required",
                                 minLength: {
                                     value: 8,
-                                    message: "Минимум 8 символов"
+                                    message: "Minimum 8 characters"
                                 }
                             })}
                             type="password"

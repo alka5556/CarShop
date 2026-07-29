@@ -1,6 +1,7 @@
 import { type FC, useState, useEffect, type ChangeEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { refreshAccessToken } from '../utils/auth'
+import { useAuth } from '../../context/AuthContext'
 import './profile.css'
 
 interface User {
@@ -20,6 +21,7 @@ interface GarageCar {
 
 const Profile: FC = () => {
     const navigate = useNavigate()
+    const { accessToken, logout } = useAuth()
     const [user, setUser] = useState<User | null>(null)
     const [garageCars, setGarageCars] = useState<GarageCar[]>([]) 
     const [loading, setLoading] = useState(true)
@@ -28,9 +30,7 @@ const Profile: FC = () => {
     useEffect(() => { //нужен только если действие должно произойти автоматически
         const fetchProfileAndGarage = async () => {
             try {
-                const token = localStorage.getItem('accessToken')
-
-                if (!token) {
+                if (!accessToken) {
                     navigate('/login')
                     return
                 }
@@ -40,7 +40,7 @@ const Profile: FC = () => {
 //получаем данные пользователя имя пчота
                 let response = await fetch("http://localhost:3000/users/profile", {
                     method: "GET",
-                    headers: { "Authorization": `Bearer ${token}` }
+                    headers: { "Authorization": `Bearer ${accessToken}` }
                 })
 
                 // Если токен протух — пробуем обновить
@@ -75,7 +75,7 @@ const Profile: FC = () => {
                 // 2. Получаем заказы (Гараж) по правильному адресу
                 const ordersResponse = await fetch("http://localhost:3000/orders/user-orders", { 
                     method: "GET",
-                    headers: { "Authorization": `Bearer ${token}` }
+                    headers: { "Authorization": `Bearer ${accessToken}` }
                 })
 
                 if (ordersResponse.ok) {
@@ -84,8 +84,8 @@ const Profile: FC = () => {
                     
                     const mappedCars: GarageCar[] = ordersList.map((order: any) => {
                         const car = order.carId 
-                        const carName = typeof car === 'object' ? `${car.brand} ${car.model}` : "Автомобиль"
-                        const imageUrl = typeof car === 'object' ? car.imageUrl : undefined
+                        const carName = car && typeof car === 'object' ? `${car.brand} ${car.model}` : "Автомобиль (удалён)"
+                        const imageUrl = car && typeof car === 'object' ? car.imageUrl : undefined
                         
                         let statusText = "In processing"
                         if (order.status === 'completed' || order.status === 'delivered') statusText = "In garage"
@@ -119,11 +119,11 @@ const Profile: FC = () => {
         if (!file) return
 
         try {
-            const token = localStorage.getItem('accessToken')
-            if (!token) {
+            if (!accessToken) {
                 navigate('/login')
                 return
             }
+
 
             const formData = new FormData()
             formData.append('avatar', file)
@@ -131,7 +131,7 @@ const Profile: FC = () => {
             const response = await fetch('http://localhost:3000/users/avatar', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${accessToken}`
                 },
                 body: formData
             })
@@ -158,34 +158,16 @@ const Profile: FC = () => {
                 const result = await response.json()
                 setUser(result.user)
             } else {
-                alert('Не удалось загрузить фото')
+                alert('Failed to upload photo')
             }
         } catch (error) {
             console.error('Avatar upload error:', error)
-            alert('Ошибка при загрузке фото')
+            alert('Error to upload photo')
         }
     }
 
-    const logout = async () => {
-        const refreshToken = localStorage.getItem("refreshToken")
-
-        // Сначала чистим локально
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('refreshToken')
-
-        // Потом говорим серверу (если есть токен)
-        if (refreshToken) {
-            try {
-                await fetch("http://localhost:3000/users/logout", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ refreshToken })
-                })
-            } catch (error) {
-                console.error('Logout request failed:', error)
-            }
-        }
-
+    const handleLogout = () => {
+        logout()
         navigate('/login')
     }
 
@@ -197,14 +179,14 @@ const Profile: FC = () => {
                     <Link to="/">Home</Link>
                     <Link to="/orders">My Orders</Link>
                     <Link to="/cart">Cart</Link>
-                    <button onClick={logout} className="logout-btn">Logout</button>
+                    <button onClick={handleLogout} className="logout-btn">Logout</button>
                 </div>
             </nav>
 
             <div className="profile-container">
                 {loading ? (
                     <div className="welcome-card">
-                        <p style={{ textAlign: 'center', color: '#888' }}>Загружаем профиль...</p>
+                        <p style={{ textAlign: 'center', color: '#888' }}>Loading profile...</p>
                     </div>
                 ) : error ? (
                     <div className="welcome-card">
@@ -279,7 +261,7 @@ const Profile: FC = () => {
                                             textDecoration: 'none',
                                             fontWeight: 'bold'
                                         }}>
-                                            Выбрать автомобиль
+                                            Choose car
                                         </Link>
                                     </div>
                                 )}

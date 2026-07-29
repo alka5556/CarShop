@@ -1,6 +1,8 @@
-import { type FC, useState, useEffect } from 'react'
+import { type FC, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom' //лин ссылка между странциами вместо хреф, юс навигайт для перехода на другую страницу из кода
+import { GoogleLogin } from '@react-oauth/google'
+import { useAuth } from '../../context/AuthContext'
 import './login.css'
 
 interface LoginData {
@@ -10,69 +12,62 @@ interface LoginData {
 
 const Login: FC = () => {
     const navigate = useNavigate()
-    // Стейты для экрана ожидания и вывода ошибок
-    const [loading, setLoading] = useState<boolean>(false)
-    const [error, setError] = useState<string | null>(null)
-// Подключаем библиотеку для удобной работы с формой и валидацией
-    const {register, handleSubmit, formState: { errors }} = useForm<LoginData>()
-     //register подключает инпут к форме
-    //handleSubmit обрабатывает отправку формы
+    const { login, loading, error, clearError, setError, loginWithGoogle } = useAuth()
 
-    // Если пользователь уже залогинен (токен есть), сразу отправляем его на главную
-    useEffect(() => {
-        const token = localStorage.getItem("accessToken")
-        if (token) {
-            navigate("/")
+    const { register, handleSubmit, formState: { errors } } = useForm<LoginData>() //Инициализируем
+    // библиотеку react-hook-form. Мы передаем ей наш интерфейс <LoginData>, чтобы она знала правила.
+//register: "клей", который привязывает обычные HTML-инпуты к нашей форме.
+//handleSubmit: обертка, которая сначала проверит правила (например, "пароль минимум 8 символов"). 
+// Если всё ок, она запустит нашу функцию onLogin. Если нет — заблокирует отправку и заполнит
+//  объект errors.
+//handleSubmit из библиотеки react-hook-form как обертку для моей функции onLogin. 
+// Это позволяет библиотеке автоматически проверить правила валидации (например, длину пароля) 
+// перед отправкой. 
+
+const googleResponseMessage = async (credentialResponse: any) => {
+    const credential = credentialResponse.credential;
+    
+    try {
+        const response = await fetch('http://localhost:3000/users/google-signin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ credential })
+        });
+
+        if (!response.ok) {
+            setError("Google sign-in error. Try again.");
+            return;
         }
-    }, [navigate])
 
-    // Функция, которая срабатывает при нажатии на кнопку "Access Account"
-    const onLogin = async (data: LoginData) => { 
-        console.log("Login attempt with data:", data)
-        setError(null) //сбрасываем прошлую ошибку. 
-        //если до этого юзер ввел неправильный пароль, надпись об ошибке сотрется, давая новую попытку
-        setLoading(true) //включаем режим загрузки (true). Кнопка заблокируется, и на ней появится надпись "Signing in...", чтобы юзер не кликал сто раз
+        const data = await response.json();
+        
+        // ← ВОТ ГЛАВНОЕ ИЗМЕНЕНИЕ:
+        // Мы не просто пишем в localStorage, мы говорим AuthContext обновиться!
+        loginWithGoogle(data.user, data); 
+        
+        navigate("/");
+        
+    } catch (err) {
+        console.error('Google login error:', err);
+        setError("Server is not available. Try again later");
+    }
+}
+    const googleErrorMessage = () => {
+    console.log("Google Error")
+    setError("Google sign-in error. Try again or use email.")
+    }
 
-        try {
-            // Отправляем обычный прямой запрос на локальный сервер
-            const response = await fetch('http://localhost:3000/users/login', {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(data) //сами данные (email + пароль)
-            })
+    // Сбрасываем ошибку при уходе со страницы
+    useEffect(() => {
+        return () => {
+            clearError()
+        }
+    }, [clearError])
 
-            // Если сервер ответил ошибкой (например, 401 или 403)
-            if (!response.ok) {
-                if (response.status === 401 || response.status === 403) {
-                    setError("Неверный логин или пароль")
-                } else {
-                    setError(`Ошибка сервера (${response.status}). Попробуйте позже.`)
-                }
-                return
-            }
-
-            const result = await response.json()
-
-            // Проверяем, что бэкенд вообще прислал нам нужные токены. 
-            //то есть после получения посылки от джейсона, идет проверка находятся ли внутри вообще токены (мало ли, вдруг накосячил)
-            if (!result.accessToken || !result.refreshToken) {
-                console.error("Сервер не вернул токены:", result)
-                setError("Ошибка сервера. Попробуйте позже.")
-                return //если ключи на месте переходим к финальному шагу
-            }
-
-            // Успешно сохраняем токены в память браузера (это и есть финальный шаг)
-            localStorage.setItem("accessToken", result.accessToken)
-            localStorage.setItem("refreshToken", result.refreshToken)
-            localStorage.setItem("userRole", result.user?.role || "user") 
-
-            console.log("Login success")
-            navigate("/") // Уводим юзера на главную страницу
-        } catch (error) {
-            console.error("Login error:", error)
-            setError("Сервер недоступен. Проверьте подключение.")
-        } finally {
-            setLoading(false) //разблокирует кнопку в конце в любом случае
+    const onLogin = async (data: LoginData) => {
+        const success = await login(data)
+        if (success) {
+            navigate("/")
         }
     }
 
@@ -90,16 +85,16 @@ const Login: FC = () => {
                     <h2>Sign In</h2>
                     <p>Enter your credentials to access your fleet.</p>
 
-                    {/* Показываем плашку с ошибкой, если она есть */}
                     {error && <div className="error-message">{error}</div>}
 
-                    <form onSubmit={handleSubmit(onLogin)} noValidate>
+                    <form onSubmit={handleSubmit(onLogin)} noValidate> {/*браузер пыттается отправить форму
+                    эта фигня перехватывает и проверяет правила register(обящательный имейл и пароль минимум 8 симболов*/}
                         <div className="form-group">
                             <label htmlFor="email">Email Address</label>
                             <input
-                            {...register("email", {
-                             required: "Email обязателен"
-                           })}
+                                {...register("email", {
+                                    required: "Email обязателен"
+                                })}
                                 type="email"
                                 id="email"
                                 placeholder="you@example.com"
@@ -114,10 +109,10 @@ const Login: FC = () => {
                             <label htmlFor="password">Password</label>
                             <input
                                 {...register("password", {
-                                    required: "Пароль обязателен",
+                                    required: "Password is required",
                                     minLength: {
                                         value: 8,
-                                        message: "Минимум 8 символов"
+                                        message: "Minimum 8 characters"
                                     }
                                 })}
                                 type="password"
@@ -138,6 +133,14 @@ const Login: FC = () => {
                             {loading ? "Signing in..." : "Access Account"}
                         </button>
                     </form>
+
+                    <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                        <p>Or continue with</p>
+                        <GoogleLogin
+                            onSuccess={googleResponseMessage}
+                            onError={googleErrorMessage}
+                        />
+                    </div>
 
                     <div className="form-footer">
                         Don't have an account? <Link to="/register">Register here</Link>

@@ -1,80 +1,32 @@
-import { type FC, useState, useEffect } from 'react'
+import { type FC, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { refreshAccessToken } from '../utils/auth'
+import { useAppDispatch, useAppSelector } from '../../store/hooks'
+import { fetchOrders } from '../../store/slices/orderSlice'
+import { useAuth } from '../../context/AuthContext'
 import './orders.css'
-
-interface Order {
-    _id: string
-    carId: { brand: string; model: string }
-    date: string
-    status: 'completed' | 'pending'
-    amount: number
-}
 
 const Orders: FC = () => {
     const navigate = useNavigate()
-    const [orders, setOrders] = useState<Order[]>([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
+    const dispatch = useAppDispatch()
+
+    // Заказы теперь берём из Redux вместо useState
+    const { items: orders, loading, error } = useAppSelector((state) => state.orders)
+
+    const { accessToken } = useAuth()
 
     useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const token = localStorage.getItem('accessToken')
-
-                if (!token) {
-                    navigate("/login")
-                    return
-                }
-
-                setLoading(true)
-                setError(null)
-
-                let response = await fetch('http://localhost:3000/orders/user-orders', {
-                    method: "GET",
-                    headers: { "Authorization": `Bearer ${token}` }
-                })
-
-                // Если токен протух — пробуем обновить
-                if (response.status === 401) {
-                    const newToken = await refreshAccessToken()
-                    if (!newToken) {
-                        navigate("/login")
-                        return
-                    }
-                    // Повторяем запрос с новым токеном
-                    response = await fetch('http://localhost:3000/orders/user-orders', {
-                        method: "GET",
-                        headers: { "Authorization": `Bearer ${newToken}` }
-                    })
-                }
-
-                if (!response.ok) {
-                    throw new Error(`Server error: ${response.status}`)
-                }
-
-                const result = await response.json()
-
-                // Защита: если бэк вернул не то, что ожидаем
-                if (Array.isArray(result.orders)) {
-                    setOrders(result.orders)
-                } else if (Array.isArray(result)) {
-                    setOrders(result)
-                } else {
-                    console.warn("Unexpected format:", result)
-                    setOrders([])
-                }
-                console.log("orders:", result)
-            } catch (error) {
-                console.error("Error loading orders:", error)
-                setError("Error loading orders. Please try again later.")
-            } finally {
-                setLoading(false)
-            }
+        if (!accessToken) {
+            navigate("/login")
+            return
         }
-        fetchOrders()
-    }, [navigate])
 
+//Мы отправляем курьера fetchOrders в Redux slice  за заказами
+        dispatch(fetchOrders()).then((result) => { //result огда курьер вернется (успешно или с ошибкой), выполни этот код с результатом его работы
+            if (fetchOrders.rejected.match(result) && result.payload === 'AUTH_EXPIRED') { //токен протух и его не смогли обновить 
+                navigate("/login")
+            }
+        })
+    }, [accessToken, dispatch, navigate])
 
     return (
         <div className="page">
@@ -95,7 +47,7 @@ const Orders: FC = () => {
                 <div className="orders-table-wrapper">
                     {loading ? (
                         <p style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
-                            Загружаем заказы...
+                            Loading orders...
                         </p>
                     ) : error ? (
                         <p style={{ textAlign: 'center', padding: '20px', color: 'red' }}>
@@ -128,7 +80,7 @@ const Orders: FC = () => {
                                 )) : (
                                     <tr>
                                         <td colSpan={5} style={{ textAlign: 'center', padding: '30px', color: '#888' }}>
-                                            У вас пока нет заказов
+                                            You don't have any orders yet.
                                         </td>
                                     </tr>
                                 )}
