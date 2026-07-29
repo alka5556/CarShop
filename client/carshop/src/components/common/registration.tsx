@@ -44,7 +44,7 @@ const Registration: FC = () => {
             navigate('/login')
         } catch (error) {
             console.error("Registration error:", error)
-            setError("Сервер недоступен. Проверьте подключение.")
+            setError("Server is not availavle, checl your network again.")
         } finally {
             setLoading(false)
         }
