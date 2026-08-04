@@ -1,10 +1,25 @@
-// Адрес бэкенда. Локально берётся из .env (или подставляется localhost),
-// на проде Vercel подставит сюда адрес сервера из переменной VITE_API_URL.
-// Vite вшивает это значение в бандл во время сборки, поэтому после смены переменной
-// на хостинге фронтенд надо пересобрать.
+// Адрес бэкенда.
+//
+// По умолчанию адрес пустой — то есть запросы идут на тот же домен, откуда открыт сайт.
+// Так работает деплой одним сервисом: Express отдаёт и собранный фронтенд, и API,
+// поэтому никакой отдельный адрес не нужен и CORS не участвует.
+//
+// В режиме разработки (`npm run dev`) фронтенд живёт на порту 5173, а сервер на 3000,
+// это разные адреса — поэтому подставляем localhost:3000.
+//
+// VITE_API_URL нужен, только если бэкенд вынесен на отдельный хостинг. Vite вшивает
+// значение в бандл во время сборки, поэтому после смены переменной нужна пересборка.
 const rawApiUrl = import.meta.env.VITE_API_URL as string | undefined
 
-export const API_URL = (rawApiUrl || 'http://localhost:3000').replace(/\/+$/, '') //убираем слэш в конце, чтобы не получалось //cars
+const fallback = import.meta.env.DEV ? 'http://localhost:3000' : ''
+
+// Адрес самого сервера. Пустая строка = тот же домен, откуда открыт сайт.
+const SERVER_URL = (rawApiUrl || fallback).replace(/\/+$/, '') //убираем слэш в конце, чтобы не получалось //api
+
+// Все запросы к API идут через /api. Префикс нужен потому, что страницы сайта
+// /cart и /orders совпадают по адресу с эндпоинтами — без него перезагрузка
+// страницы корзины отдавала бы JSON вместо самой страницы.
+export const API_URL = SERVER_URL + '/api'
 
 // Ссылки на картинки приходят из базы в трёх видах:
 //  1. https://res.cloudinary.com/... — уже готовый адрес, отдаём как есть
@@ -16,14 +31,15 @@ export const resolveImageUrl = (url?: string): string => {
         return ''
     }
 
+    // картинки раздаются с /uploads, без префикса /api — поэтому здесь SERVER_URL
     const uploadsIndex = url.indexOf('/uploads/')
     if (uploadsIndex !== -1) {
-        return API_URL + url.slice(uploadsIndex)
+        return SERVER_URL + url.slice(uploadsIndex)
     }
 
     if (/^https?:\/\//i.test(url)) {
         return url
     }
 
-    return API_URL + (url.startsWith('/') ? url : '/' + url)
+    return SERVER_URL + (url.startsWith('/') ? url : '/' + url)
 }

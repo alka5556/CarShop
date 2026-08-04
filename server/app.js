@@ -5,13 +5,16 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const multer = require('multer')
 const path = require('path')
+const fs = require('fs')
 require('dotenv').config()
 
 const app = express()
 
-// Список адресов фронтенда, которым разрешено стучаться в API.
+// CORS нужен, только если фронтенд живёт на ДРУГОМ адресе.
+// При деплое одним сервисом (фронт отдаётся отсюда же, см. ниже) он не нужен вовсе —
+// достаточно не задавать CLIENT_URL. Настройка остаётся на случай раздельного хостинга.
 // В CLIENT_URL можно положить несколько адресов через запятую.
-// Если переменная не задана (локальная разработка) — пускаем всех, как раньше.
+// Если переменная не задана — пускаем всех.
 const allowedOrigins = (process.env.CLIENT_URL || '')
     .split(',')
     .map(origin => origin.trim().replace(/\/+$/, ''))
@@ -47,17 +50,51 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' })
 })
 
+// Все маршруты API живут под /api.
+// Это не украшательство: страницы сайта /cart и /orders совпадают по адресу
+// с эндпоинтами API. Без префикса перезагрузка страницы на /cart отдавала бы
+// JSON с ошибкой 401 вместо самой страницы.
 const carRoutes = require('./routes/car_routes')
-app.use('/cars', carRoutes)
+app.use('/api/cars', carRoutes)
 
 const userRoutes = require('./routes/user_routes')
-app.use('/users', userRoutes)
+app.use('/api/users', userRoutes)
 
 const orderRoutes = require('./routes/order_routes')
-app.use('/orders', orderRoutes)
+app.use('/api/orders', orderRoutes)
 
 const cartRoutes = require('./routes/cart_routes')
-app.use('/cart', cartRoutes)
+app.use('/api/cart', cartRoutes)
+
+// ── Отдаём собранный фронтенд с этого же сервера ────────────────────────────
+// Тогда сайт и API живут на одном адресе: не нужны ни CORS, ни VITE_API_URL,
+// ни второй хостинг. Если сборки нет (локальная разработка через `npm run dev`
+// на порту 5173) — блок просто пропускается, и сервер работает как обычный API.
+const clientDist = path.join(__dirname, '..', 'client', 'carshop', 'dist')
+
+if (fs.existsSync(path.join(clientDist, 'index.html'))) {
+    app.use(express.static(clientDist))
+
+    // Адреса, которые обслуживает сервер, а не React. Если такого маршрута нет —
+    // это честная 404, а не страница сайта. Иначе фронтенд получал бы HTML вместо
+    // JSON и падал с непонятной ошибкой разбора.
+    const apiPrefixes = ['/api', '/uploads', '/health']
+
+    // Всё остальное отдаём в index.html, иначе React Router сломается при
+    // перезагрузке страницы на /login или /admin.
+    // В Express 5 нельзя писать app.get('*') — нужен именованный wildcard.
+    app.get('/*splat', (req, res, next) => {
+        const isApi = apiPrefixes.some(p => req.path === p || req.path.startsWith(p + '/'))
+        if (isApi) {
+            return next()
+        }
+        res.sendFile(path.join(clientDist, 'index.html'))
+    })
+
+    console.log('serving client build from', clientDist)
+} else {
+    console.log('client build not found — running as API only')
+}
 
 app.use((err, req, res, next) => {
     console.log('ERROR:', err)
