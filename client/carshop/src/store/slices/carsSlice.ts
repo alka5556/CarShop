@@ -24,7 +24,7 @@ const initialState: CarsState = {
 
 export const fetchCars = createAsyncThunk('cars/fetchAll', async () => {
   const response = await fetch(`${API_URL}/cars`);
-  if (!response.ok) throw new Error('Ошибка загрузки машин');
+  if (!response.ok) throw new Error('Machine loading error');
   return await response.json(); // Возвращает массив машин
 });
 
@@ -43,7 +43,7 @@ export const addCar = createAsyncThunk('cars/add', async (formData: FormData) =>
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Ошибка добавления');
+      throw new Error(errorData.message || 'Adding error');
     }
 
     return await response.json();
@@ -60,7 +60,7 @@ export const deleteCar = createAsyncThunk('cars/delete', async (id: string) => {
       },
     });
 
-    if (!response.ok) throw new Error('Ошибка удаления');
+    if (!response.ok) throw new Error('Delete error');
     return id; // Возвращает ID удаленной машины тобы Redux знал, какую именно машину убрать из списка.
   }
 );

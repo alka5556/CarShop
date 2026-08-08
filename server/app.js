@@ -5,21 +5,19 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const multer = require('multer')
 const path = require('path')
-const fs = require('fs')
+const fs = require('fs') //модуль для проверки а папка dist ваще сущестует?
 require('dotenv').config()
 
 const app = express()
 
-// CORS нужен, только если фронтенд живёт на ДРУГОМ адресе.
-// При деплое одним сервисом (фронт отдаётся отсюда же, см. ниже) он не нужен вовсе —
-// достаточно не задавать CLIENT_URL. Настройка остаётся на случай раздельного хостинга.
-// В CLIENT_URL можно положить несколько адресов через запятую.
-// Если переменная не задана — пускаем всех.
+//по сути блок корс. разбирает ссылку на список адресов, убирает пробелы и слжши в конце
 const allowedOrigins = (process.env.CLIENT_URL || '')
     .split(',')
     .map(origin => origin.trim().replace(/\/+$/, ''))
     .filter(Boolean)
 
+//если CLIENT_URL не задан (allowedOrigins.length === 0) — пускать всех. 
+// Именно поэтому на Render, где CLIENT_URL не задаётся, CORS практически "спит" и не мешает.
 app.use(cors({
     origin: (origin, callback) => {
         // origin пустой у запросов не из браузера (curl, Postman) — их не режем
@@ -66,28 +64,33 @@ app.use('/api/orders', orderRoutes)
 const cartRoutes = require('./routes/cart_routes')
 app.use('/api/cart', cartRoutes)
 
-// ── Отдаём собранный фронтенд с этого же сервера ────────────────────────────
+// Отдаём собранный фронтенд с этого же сервера
 // Тогда сайт и API живут на одном адресе: не нужны ни CORS, ни VITE_API_URL,
 // ни второй хостинг. Если сборки нет (локальная разработка через `npm run dev`
 // на порту 5173) — блок просто пропускается, и сервер работает как обычный API.
 const clientDist = path.join(__dirname, '..', 'client', 'carshop', 'dist')
 
-if (fs.existsSync(path.join(clientDist, 'index.html'))) {
-    app.use(express.static(clientDist))
+//по сути вопрос а фронтед собран? то есть при локальном запуске dist пропускается, 
+// раьотает все как чистый апи, если мы на хсотинге запускаем гибридный режим
+if (fs.existsSync(path.join(clientDist, 'index.html'))) { //есть папка дист?
+    app.use(express.static(clientDist)) //Раздаем статические файлы: картинки, CSS, JS-бандл React.
+    //дА, папка есть! (Мы на хостинге или сделали npm run build).
 
-    // Адреса, которые обслуживает сервер, а не React. Если такого маршрута нет —
-    // это честная 404, а не страница сайта. Иначе фронтенд получал бы HTML вместо
-    // JSON и падал с непонятной ошибкой разбора.
-    const apiPrefixes = ['/api', '/uploads', '/health']
+    const apiPrefixes = ['/api', '/uploads', '/health'] //адреса обслуживают сервер, запоминаем их что оин не странциы сайта 
 
-    // Всё остальное отдаём в index.html, иначе React Router сломается при
-    // перезагрузке страницы на /login или /admin.
-    // В Express 5 нельзя писать app.get('*') — нужен именованный wildcard.
-    app.get('/*splat', (req, res, next) => {
+    // ловушка, перехват всего что не попало в правила выше.
+    //  всё остальное отдаём в index.html, иначе React Router сломается при
+    app.get('/*splat', (req, res, next) => { //// /*splat означает "любой путь, который не был обработан выше".
         const isApi = apiPrefixes.some(p => req.path === p || req.path.startsWith(p + '/'))
-        if (isApi) {
+        //проврка а вдруг все же эт апи?
+        //начинается с /api, /uploads или /heлф
+        if (isApi) { //если апи запрос то говорим ему "некст"
             return next()
         }
+        ////ЕСЛИ ЭТО НЕ API (например, пользователь обновил страницу /cart):
+        // Мы отдаем ему главный файл index.html.
+        // Браузер его получает, загружает React, а React Router (внутри браузера) 
+        // видит путь /cart и сам рисует нужный компонент!
         res.sendFile(path.join(clientDist, 'index.html'))
     })
 
@@ -99,7 +102,7 @@ if (fs.existsSync(path.join(clientDist, 'index.html'))) {
 app.use((err, req, res, next) => {
     console.log('ERROR:', err)
 
-    // Ошибки загрузки файла — это вина клиента, а не сервера
+    // Ошибки загрузки файла картинки, вина клиента
     if (err instanceof multer.MulterError) {
         const message = err.code === 'LIMIT_FILE_SIZE'
             ? 'File is too large (max 5 MB)'

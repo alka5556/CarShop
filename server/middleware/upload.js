@@ -46,7 +46,7 @@ const storage = useCloudinary
         }
     })
 
-// 3. БЕЗОПАСНОСТЬ: Фильтр файлов (Разрешаем ТОЛЬКО картинки)
+// БЕЗОПАСНОСТЬ: Фильтр файлов (Разрешаем ТОЛЬКО картинки)
 const fileFilter = (req, file, cb) => {
     // Список разрешенных MIME-типов
     const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif']

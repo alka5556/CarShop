@@ -71,14 +71,14 @@ export const fetchCart = createAsyncThunk<CartItem[], void, { rejectValue: strin
   async (_, { rejectWithValue }) => {
     try {
       const response = await fetchWithAuth(`${API_URL}/cart`, { method: 'GET' });
-      if (!response.ok) throw new Error('Ошибка загрузки корзины');
+      if (!response.ok) throw new Error('Error loading cart');
       const result = await response.json();
       return result.cartItems || [];
     } catch (err) {
       if (err instanceof Error && err.message === 'AUTH_EXPIRED') {
         return rejectWithValue('AUTH_EXPIRED');
       }
-      return rejectWithValue('Ошибка загрузки корзины');
+      return rejectWithValue('Error loading cart');
     }
   }
 );
@@ -110,14 +110,14 @@ export const removeCartItem = createAsyncThunk<string, string, { rejectValue: st
   'cart/removeItem', async (id, { rejectWithValue }) => {
     try {
       const response = await fetchWithAuth(`${API_URL}/cart/${id}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error('Не удалось удалить');
+      if (!response.ok) throw new Error('Failed to delete');
       return id;
     } 
       catch (err) {
       if (err instanceof Error && err.message === 'AUTH_EXPIRED') {
         return rejectWithValue('AUTH_EXPIRED');
       }
-      return rejectWithValue('Не удалось удалить товар');
+      return rejectWithValue('Failed to delete item');
     }
   }
 );
@@ -134,7 +134,7 @@ export const checkout = createAsyncThunk<void, CartItem[], { rejectValue: string
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ carId: item.carId._id }),
         });
-        if (!response.ok) throw new Error('Ошибка создания заказа');
+        if (!response.ok) throw new Error('Error creating order');
       }
 
       // Если все заказы созданы — чистим корзину (ошибки удаления тут не критичны)
@@ -142,14 +142,14 @@ export const checkout = createAsyncThunk<void, CartItem[], { rejectValue: string
         try {
           await fetchWithAuth(`${API_URL}/cart/${item._id}`, { method: 'DELETE' });
         } catch {
-          console.warn(`Не удалось удалить ${item._id} из корзины`);
+          console.warn(`Can't delete ${item._id} from cart`);
         }
       }
     } catch (err) {
       if (err instanceof Error && err.message === 'AUTH_EXPIRED') {
         return rejectWithValue('AUTH_EXPIRED');
       }
-      return rejectWithValue('Не удалось оформить заказ. Попробуйте ещё раз.');
+      return rejectWithValue('Failed to place your order. Please try again.');
     }
   }
 );
@@ -175,7 +175,7 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Ошибка';
+        state.error = action.payload || 'Error';
       })
 
       // Удаление товара
@@ -183,7 +183,7 @@ const cartSlice = createSlice({
         state.items = state.items.filter((item) => item._id !== action.payload);
       })
       .addCase(removeCartItem.rejected, (state, action) => {
-        state.error = action.payload || 'Не удалось удалить товар';
+        state.error = action.payload || 'Failed to delete item';
       })
 
       // Оформление заказа
@@ -197,7 +197,7 @@ const cartSlice = createSlice({
       })
       .addCase(checkout.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Не удалось оформить заказ';
+        state.error = action.payload || 'Failed to place your order';
       });
   },
 });

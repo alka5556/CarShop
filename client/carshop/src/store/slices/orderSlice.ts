@@ -82,7 +82,7 @@ const orderSlice = createSlice({
       })
       .addCase(fetchOrders.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Ошибка загрузки заказов';
+        state.error = action.payload || 'Error loading orders';
       });
   },
 });

@@ -72,6 +72,8 @@ const googleResponseMessage = async (credentialResponse: any) => {
         }
     }
 
+    console.log("🔍 ПРОВЕРКА: текущее значение error =", error)
+
     return (
         <div className="page">
             <nav className="nav">
