@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom' //лин ссылка ме�
 import { GoogleLogin } from '@react-oauth/google'
 import { useAuth } from '../../context/AuthContext'
 import './login.css'
+import { API_URL } from '../../config'
 
 interface LoginData {
     email: string
@@ -28,7 +29,7 @@ const googleResponseMessage = async (credentialResponse: any) => {
     const credential = credentialResponse.credential;
     
     try {
-        const response = await fetch('http://localhost:3000/users/google-signin', {
+        const response = await fetch(`${API_URL}/users/google-signin`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ credential })
@@ -70,6 +71,8 @@ const googleResponseMessage = async (credentialResponse: any) => {
             navigate("/")
         }
     }
+
+    console.log("🔍 ПРОВЕРКА: текущее значение error =", error)
 
     return (
         <div className="page">

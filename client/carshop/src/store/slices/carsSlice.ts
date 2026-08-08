@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import { API_URL } from '../../config'
 
 export interface Car {
   _id: string;
@@ -22,8 +23,8 @@ const initialState: CarsState = {
 };
 
 export const fetchCars = createAsyncThunk('cars/fetchAll', async () => {
-  const response = await fetch('http://localhost:3000/cars');
-  if (!response.ok) throw new Error('Ошибка загрузки машин');
+  const response = await fetch(`${API_URL}/cars`);
+  if (!response.ok) throw new Error('Machine loading error');
   return await response.json(); // Возвращает массив машин
 });
 
@@ -32,7 +33,7 @@ export const fetchCars = createAsyncThunk('cars/fetchAll', async () => {
 export const addCar = createAsyncThunk('cars/add', async (formData: FormData) => {
     const token = localStorage.getItem('accessToken');
 
-    const response = await fetch('http://localhost:3000/cars', {
+    const response = await fetch(`${API_URL}/cars`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -42,7 +43,7 @@ export const addCar = createAsyncThunk('cars/add', async (formData: FormData) =>
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Ошибка добавления');
+      throw new Error(errorData.message || 'Adding error');
     }
 
     return await response.json();
@@ -52,14 +53,14 @@ export const addCar = createAsyncThunk('cars/add', async (formData: FormData) =>
 export const deleteCar = createAsyncThunk('cars/delete', async (id: string) => {
     const token = localStorage.getItem('accessToken');
 
-    const response = await fetch(`http://localhost:3000/cars/${id}`, {
+    const response = await fetch(`${API_URL}/cars/${id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    if (!response.ok) throw new Error('Ошибка удаления');
+    if (!response.ok) throw new Error('Delete error');
     return id; // Возвращает ID удаленной машины тобы Redux знал, какую именно машину убрать из списка.
   }
 );

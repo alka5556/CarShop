@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
+const { saveImage } = require('../middleware/upload')
 const {OAuth2Client} = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -172,13 +173,12 @@ exports.profile = async (req, res, next) => {
 exports.uploadAvatar = async (req, res, next) => {
 
     try {
-        const { base } = require('../middleware/upload')
         // Проверяем, что файл был загружен
         if (!req.file) {
             return res.status(400).json({ message: 'No file uploaded' })
         }
-        // Создаем полный URL для аватара
-        const avatarUrl = `${base}uploads/${req.file.filename}`
+        // saveImage кладёт файл в Cloudinary (или на диск) и отдаёт готовую ссылку
+        const avatarUrl = await saveImage(req.file)
         // Обовляем пользователя в базе данных
         const user = await User.findByIdAndUpdate(
             req.user.id, {avatar: avatarUrl}, {new: true}).select('-refreshTokens -password')

@@ -1,8 +1,8 @@
-GET http://localhost:3000/cars
+GET http://localhost:3000/api/cars
 
 ###
 
-POST http://localhost:3000/cars
+POST http://localhost:3000/api/cars
 Content-Type: application/json
 
 {
@@ -14,7 +14,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/cars
+POST http://localhost:3000/api/cars
 Content-Type: application/json
 
 {
@@ -25,7 +25,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/cars
+POST http://localhost:3000/api/cars
 Content-Type: application/json
 
 {
@@ -37,11 +37,11 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/cars?brand=Ferrari
+GET http://localhost:3000/api/cars?brand=Ferrari
 
 ###
 
-POST http://localhost:3000/users/registration
+POST http://localhost:3000/api/users/registration
 Content-Type: application/json
 
 {
@@ -51,7 +51,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/users/registration
+POST http://localhost:3000/api/users/registration
 Content-Type: application/json
 
 {
@@ -62,7 +62,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/users/login
+POST http://localhost:3000/api/users/login
 Content-Type: application/json
 
 {
@@ -71,11 +71,11 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/cars
+POST http://localhost:3000/api/cars
 
 ###
 
-POST http://localhost:3000/users/login
+POST http://localhost:3000/api/users/login
 Content-Type: application/json
 
 {
@@ -85,7 +85,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/cars
+POST http://localhost:3000/api/cars
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMWNhYjQ5YTdiMjE0MjMzNDhjYmU0YyIsImlhdCI6MTc4MDMzNjY3MiwiZXhwIjoxNzgyMDY0NjcyfQ.VRk-Y2r8x8JpOJL2X-zVb9XGU_P31f_y47flaW0wpqg
 Content-Type: application/json
 
@@ -96,7 +96,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/users/registration
+POST http://localhost:3000/api/users/registration
 Content-Type: application/json
 
 {
@@ -107,7 +107,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/users/login
+POST http://localhost:3000/api/users/login
 Content-Type: application/json
 
 {
@@ -117,7 +117,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/cars
+POST http://localhost:3000/api/cars
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMWVhMGFlNDE2MWQwYjgyZGRlN2ZmYiIsImlhdCI6MTc4MDM5Mjc0MiwiZXhwIjoxNzgyMTIwNzQyfQ._jxr55qeLI5oVeBDbKZq59Sp-FP3pruk9rzh7DXtwlU
 Content-Type: application/json
 
@@ -129,7 +129,7 @@ Content-Type: application/json
 }
 ###
 
-POST http://localhost:3000/users/registration
+POST http://localhost:3000/api/users/registration
 Content-Type: application/json
 
 {
@@ -139,7 +139,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/users/login
+POST http://localhost:3000/api/users/login
 Content-Type: application/json
 
 {
@@ -147,7 +147,7 @@ Content-Type: application/json
     "password": "123456"
 }
 ###
-POST http://localhost:3000/users/refresh
+POST http://localhost:3000/api/users/refresh
 Content-Type: application/json
 
 {
@@ -155,7 +155,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/users/registration
+POST http://localhost:3000/api/users/registration
 Content-Type: application/json
 
 {
@@ -164,7 +164,7 @@ Content-Type: application/json
     "password": "12776"
 }
 ###
-POST http://localhost:3000/users/login
+POST http://localhost:3000/api/users/login
 Content-Type: application/json
 
 {
@@ -173,12 +173,12 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/users/user-profile
+GET http://localhost:3000/api/users/user-profile
 Headers:
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzFiODNmNWUwYmY5ZmY4NjBkNDU5NiIsInJhbmRvbSI6NDM2MjM3LCJpYXQiOjE3ODE2NDQ3NjQsImV4cCI6MTc4MzM3Mjc2NH0.HJ-yUccMcss-Guv-CmwWzIoyHI4dKmX_1MCbXKFle6Y
 
 ###
-POST http://localhost:3000/users/logout
+POST http://localhost:3000/api/users/logout
 Content-Type: application/json
 
 {
@@ -187,14 +187,14 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3000/users/refresh
+POST http://localhost:3000/api/users/refresh
 Content-Type: application/json
 
 {
     "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzFiODNmNWUwYmY5ZmY4NjBkNDU5NiIsInJhbmRvbSI6NjUzMDgsImlhdCI6MTc4MTY0Njc0MSwiZXhwIjoxNzgzMzc0NzQxfQ.Ht4hOcs-1Y9eaPQ1nunpOPEL0nk1Vxqu66kW0fCL1Ms"
 }
 ###
-POST http://localhost:3000/orders
+POST http://localhost:3000/api/orders
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzFiODNmNWUwYmY5ZmY4NjBkNDU5NiIsInJhbmRvbSI6MjkxODQ1LCJpYXQiOjE3ODE2NDc5MzgsImV4cCI6MTc4MzM3NTkzOH0.IcEjtLw2j_HFycUvK068dgUJChPjThONcNNHuY1FqEk
 Content-Type: application/json
 
@@ -203,9 +203,9 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/orders/user-orders
+GET http://localhost:3000/api/orders/user-orders
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzFiODNmNWUwYmY5ZmY4NjBkNDU5NiIsInJhbmRvbSI6MjkxODQ1LCJpYXQiOjE3ODE2NDc5MzgsImV4cCI6MTc4MzM3NTkzOH0.IcEjtLw2j_HFycUvK068dgUJChPjThONcNNHuY1FqEk
 
 ###
-GET http://localhost:3000/orders
+GET http://localhost:3000/api/orders
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhMzFiODNmNWUwYmY5ZmY4NjBkNDU5NiIsInJhbmRvbSI6MjkxODQ1LCJpYXQiOjE3ODE2NDc5MzgsImV4cCI6MTc4MzM3NTkzOH0.IcEjtLw2j_HFycUvK068dgUJChPjThONcNNHuY1FqEk

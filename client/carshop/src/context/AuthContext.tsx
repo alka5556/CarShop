@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
+import { API_URL } from '../config'
 
 // 1. Типы данных
 export interface User {
@@ -50,19 +51,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => { // chil
 
     // Эта функция работает асинхронно (делает запрос к серверу), и когда она
     //  закончит работу, она обязательно вернет либо true (успех), либо false (ошибка)
-    const login = async (data: LoginData): Promise<boolean> => {
+    const login = useCallback(async (data: LoginData): Promise<boolean> => {
         setError(null) //стирают ошибку в случае если пользователь ввел ошибочный пароль, когда пытается ввести снова ошибка стирается
         setLoading(true) //нужно, чтобы заблокировать кнопку (показать "Signing in...") и пользователь не нажал её 10 раз подряд, пока ждет ответ от сервера.
 
         try {
-            const response = await fetch('http://localhost:3000/users/login', {
+            const response = await fetch(`${API_URL}/users/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
 
             if (!response.ok) {
-                setError(response.status === 401 ? 'Неверный email или пароль' : 'Ошибка сервера')
+                if (response.status === 401) {
+                    setError("Incorrect email or password")
+                } else if (response.status === 429) {
+                    setError("Too many login attempts. Try again in a few minutes")
+                } else {
+                    setError("Server error")
+                }
                 return false
             }
 
@@ -87,29 +94,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => { // chil
         } finally {
             setLoading(false)
         }
-    }
+    }, [])
 
     // Функция выхода
-    const logout = () => {
-        setUser(null)
-        setAccessToken(null)
-        localStorage.removeItem('accessToken')
-        localStorage.removeItem('refreshToken')
-        localStorage.removeItem('userRole')
-    }
+    const logout = useCallback(() => {
+    setUser(null)
+    setAccessToken(null)
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('userRole')
+    }, [])
 
-        const loginWithGoogle = (userData: User, tokens: any) => {
-        localStorage.setItem('accessToken', tokens.accessToken)
-        localStorage.setItem('refreshToken', tokens.refreshToken)
-        localStorage.setItem('userRole', userData.role || 'user')
-        
-        // Самое главное: обновляем React-состояние!
-        setAccessToken(tokens.accessToken)
-        setUser(userData)
-    }
+    const loginWithGoogle = useCallback((userData: User, tokens: any) => {
+    localStorage.setItem('accessToken', tokens.accessToken)
+    localStorage.setItem('refreshToken', tokens.refreshToken)
+    localStorage.setItem('userRole', userData.role || 'user')
+
+    setAccessToken(tokens.accessToken)
+    setUser(userData)
+    }, [])
 
     // Очистка ошибки
-    const clearError = () => setError(null)
+    const clearError = useCallback(() => setError(null), [])
 
      // При первой загрузке страницы (F5): если токен в localStorage есть,
   // но user ещё не восстановлен (просто потому что useState стартует с null) —
@@ -129,7 +135,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => { // chil
       }
  
       try {
-        const response = await fetch('http://localhost:3000/users/profile', {
+        const response = await fetch(`${API_URL}/users/profile`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
  

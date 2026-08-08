@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import { refreshAccessToken } from '../../components/utils/auth';
+import { API_URL } from '../../config'
 
 export interface CartItem {
   _id: string; //Уникальный номер записи в корзине
@@ -69,15 +70,15 @@ export const fetchCart = createAsyncThunk<CartItem[], void, { rejectValue: strin
   'cart/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetchWithAuth('http://localhost:3000/cart', { method: 'GET' });
-      if (!response.ok) throw new Error('Ошибка загрузки корзины');
+      const response = await fetchWithAuth(`${API_URL}/cart`, { method: 'GET' });
+      if (!response.ok) throw new Error('Error loading cart');
       const result = await response.json();
       return result.cartItems || [];
     } catch (err) {
       if (err instanceof Error && err.message === 'AUTH_EXPIRED') {
         return rejectWithValue('AUTH_EXPIRED');
       }
-      return rejectWithValue('Ошибка загрузки корзины');
+      return rejectWithValue('Error loading cart');
     }
   }
 );
@@ -87,7 +88,7 @@ export const addItemToCart = createAsyncThunk<void, string, { rejectValue: strin
   'cart/addItem',
   async (carId, { rejectWithValue }) => {
     try {
-      const response = await fetchWithAuth('http://localhost:3000/cart', {
+      const response = await fetchWithAuth(`${API_URL}/cart`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ carId, quantity: 1 }),
@@ -108,15 +109,15 @@ export const removeCartItem = createAsyncThunk<string, string, { rejectValue: st
     // Второй string значит, что на старте курьеру нужно передать строку (ID товара для удаления).
   'cart/removeItem', async (id, { rejectWithValue }) => {
     try {
-      const response = await fetchWithAuth(`http://localhost:3000/cart/${id}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error('Не удалось удалить');
+      const response = await fetchWithAuth(`${API_URL}/cart/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Failed to delete');
       return id;
     } 
       catch (err) {
       if (err instanceof Error && err.message === 'AUTH_EXPIRED') {
         return rejectWithValue('AUTH_EXPIRED');
       }
-      return rejectWithValue('Не удалось удалить товар');
+      return rejectWithValue('Failed to delete item');
     }
   }
 );
@@ -128,27 +129,27 @@ export const checkout = createAsyncThunk<void, CartItem[], { rejectValue: string
     try {
       // Сначала создаём все заказы
       for (const item of cartItems) { //Он будет по очереди брать каждый товар (item) из массива cartItems.
-        const response = await fetchWithAuth('http://localhost:3000/orders', {
+        const response = await fetchWithAuth(`${API_URL}/orders`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ carId: item.carId._id }),
         });
-        if (!response.ok) throw new Error('Ошибка создания заказа');
+        if (!response.ok) throw new Error('Error creating order');
       }
 
       // Если все заказы созданы — чистим корзину (ошибки удаления тут не критичны)
       for (const item of cartItems) {
         try {
-          await fetchWithAuth(`http://localhost:3000/cart/${item._id}`, { method: 'DELETE' });
+          await fetchWithAuth(`${API_URL}/cart/${item._id}`, { method: 'DELETE' });
         } catch {
-          console.warn(`Не удалось удалить ${item._id} из корзины`);
+          console.warn(`Can't delete ${item._id} from cart`);
         }
       }
     } catch (err) {
       if (err instanceof Error && err.message === 'AUTH_EXPIRED') {
         return rejectWithValue('AUTH_EXPIRED');
       }
-      return rejectWithValue('Не удалось оформить заказ. Попробуйте ещё раз.');
+      return rejectWithValue('Failed to place your order. Please try again.');
     }
   }
 );
@@ -174,7 +175,7 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Ошибка';
+        state.error = action.payload || 'Error';
       })
 
       // Удаление товара
@@ -182,7 +183,7 @@ const cartSlice = createSlice({
         state.items = state.items.filter((item) => item._id !== action.payload);
       })
       .addCase(removeCartItem.rejected, (state, action) => {
-        state.error = action.payload || 'Не удалось удалить товар';
+        state.error = action.payload || 'Failed to delete item';
       })
 
       // Оформление заказа
@@ -196,7 +197,7 @@ const cartSlice = createSlice({
       })
       .addCase(checkout.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Не удалось оформить заказ';
+        state.error = action.payload || 'Failed to place your order';
       });
   },
 });

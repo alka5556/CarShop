@@ -2,6 +2,7 @@ import { type FC, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import './registration.css'
+import { API_URL } from '../../config'
 
 interface RegisterData {
     username: string
@@ -26,7 +27,7 @@ const Registration: FC = () => {
         setLoading(true)
 
         try {
-            const response = await fetch('http://localhost:3000/users/registration', {
+            const response = await fetch(`${API_URL}/users/registration`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data)

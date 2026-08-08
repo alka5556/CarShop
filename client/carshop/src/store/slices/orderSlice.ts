@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import { refreshAccessToken } from '../../components/utils/auth';
+import { API_URL } from '../../config'
 
 export interface Order {
   _id: string;
@@ -31,7 +32,7 @@ export const fetchOrders = createAsyncThunk<Order[], void, { rejectValue: string
     const token = localStorage.getItem('accessToken');
 
     try {
-      let response = await fetch('http://localhost:3000/orders/user-orders', {
+      let response = await fetch(`${API_URL}/orders/user-orders`, {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -42,7 +43,7 @@ export const fetchOrders = createAsyncThunk<Order[], void, { rejectValue: string
         if (!newToken) {
           return rejectWithValue('AUTH_EXPIRED');
         }
-        response = await fetch('http://localhost:3000/orders/user-orders', {
+        response = await fetch(`${API_URL}/orders/user-orders`, {
           method: 'GET',
           headers: { Authorization: `Bearer ${newToken}` },
         });
@@ -81,7 +82,7 @@ const orderSlice = createSlice({
       })
       .addCase(fetchOrders.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || 'Ошибка загрузки заказов';
+        state.error = action.payload || 'Error loading orders';
       });
   },
 });
