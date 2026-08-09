@@ -41,8 +41,8 @@ const AdminPanel = () => {
     })
 
     useEffect(() => {
-        if (user?.role !== "admin") {
-            navigate("/")
+        if (user?.role !== 'admin') {
+            navigate('/')
             return
         }
         // Вместо своей fetchCars() — просим Redux загрузить машины
@@ -92,12 +92,12 @@ const AdminPanel = () => {
     }
 
     const handleDelete = async (id: string) => {
-        if (!window.confirm("Delete this car?")) return
+        if (!window.confirm('Delete this car?')) return
 
         const result = await dispatch(deleteCar(id))
 
         if (!deleteCar.fulfilled.match(result)) {
-            alert("Failed to delete this car")
+            alert('Failed to delete this car')
         }
         // если успех — Redux сам уберёт машину из списка (см. carsSlice)
     }

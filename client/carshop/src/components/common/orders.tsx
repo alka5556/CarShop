@@ -16,14 +16,14 @@ const Orders: FC = () => {
 
     useEffect(() => {
         if (!accessToken) {
-            navigate("/login")
+            navigate('/login')
             return
         }
 
 //Мы отправляем курьера fetchOrders в Redux slice  за заказами
         dispatch(fetchOrders()).then((result) => { //result огда курьер вернется (успешно или с ошибкой), выполни этот код с результатом его работы
             if (fetchOrders.rejected.match(result) && result.payload === 'AUTH_EXPIRED') { //токен протух и его не смогли обновить 
-                navigate("/login")
+                navigate('/login')
             }
         })
     }, [accessToken, dispatch, navigate])
@@ -31,11 +31,11 @@ const Orders: FC = () => {
     return (
         <div className="page">
             <nav className="nav">
-                <Link to='/' className="logo">DRIVE<span>LUX</span></Link>
+                <Link to="/" className="logo">DRIVE<span>LUX</span></Link>
                 <div className="nav-links">
-                    <Link to='/'>Home</Link>
-                    <Link to='/profile'>Profile</Link>
-                    <Link to='/cart'>Cart</Link>
+                    <Link to="/">Home</Link>
+                    <Link to="/profile">Profile</Link>
+                    <Link to="/cart">Cart</Link>
                 </div>
             </nav>
 

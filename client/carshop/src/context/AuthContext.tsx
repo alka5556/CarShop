@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import { API_URL } from '../config'
 
-// 1. Типы данных
+//Типы данных
 export interface User {
     _id: string
     username?: string
@@ -32,7 +32,7 @@ interface AuthContextType {
     loginWithGoogle: (userData: User, tokens: any) => void
 }
 
-// 2. Создаем контекст
+// Создаем контекст
 const AuthContext = createContext<AuthContextType | undefined>(undefined) //это компонент-обёртка,
 // который:
 //хранит реальные данные (user, accessToken, loading, error) через обычный useState
@@ -41,7 +41,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined) //эт
 //кладёт всё это в коробку (AuthContext.Provider) и раздаёт "всем детям" — то есть 
 // всем компонентам внутри него
 
-// 3. Провайдер
+//Провайдер сразу дает доступк файлам
 export const AuthProvider = ({ children }: { children: ReactNode }) => { // children это всё приложение (<App />), которое мы "заворачиваем" в этот провайдер в main.tsx.
     const [user, setUser] = useState<User | null>(null) //кто сейчас вошел (или null, если никто).
     const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem('accessToken'))
@@ -64,11 +64,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => { // chil
 
             if (!response.ok) {
                 if (response.status === 401) {
-                    setError("Incorrect email or password")
+                    setError('Incorrect email or password')
                 } else if (response.status === 429) {
-                    setError("Too many login attempts. Try again in a few minutes")
+                    setError('Too many login attempts. Try again in a few minutes')
                 } else {
-                    setError("Server error")
+                    setError('Server error')
                 }
                 return false
             }
@@ -86,10 +86,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => { // chil
 //Обновляем наши React-состояния (setAccessToken, setUser), чтобы интерфейс 
 // мгновенно перерисовался (например, кнопка "Sign In" сменилась на "Profile").
             
-            return true // Успех!
+            return true 
         } catch (err) {
             console.error('Login error:', err)
-            setError('Сервер недоступен')
+            setError('The server is unavailable')
             return false
         } finally {
             setLoading(false)

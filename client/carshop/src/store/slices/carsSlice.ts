@@ -85,7 +85,7 @@ const carsSlice = createSlice({
       })
       .addCase(fetchCars.rejected, (state, action) => {
         state.loading = false; // Курьер вернулся с плохими новостями
-        state.error = action.error.message || 'Ошибка'; // Записываем текст ошибки
+        state.error = action.error.message || 'Error'; // Записываем текст ошибки
       })
 
       .addCase(addCar.pending, (state) => {
@@ -98,7 +98,7 @@ const carsSlice = createSlice({
       })
       .addCase(addCar.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Ошибка добавления';
+        state.error = action.error.message || 'Adding error';
       })
 
       .addCase(deleteCar.pending, (state) => {
@@ -111,7 +111,7 @@ const carsSlice = createSlice({
       })
       .addCase(deleteCar.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Ошибка удаления';
+        state.error = action.error.message || 'Delete error';
       });
   },
 });
