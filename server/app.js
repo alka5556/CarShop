@@ -9,6 +9,7 @@ const fs = require('fs') //модуль для проверки а папка di
 require('dotenv').config()
 
 const app = express()
+app.set('trust proxy', 1);
 
 //по сути блок корс. разбирает ссылку на список адресов, убирает пробелы и слжши в конце
 const allowedOrigins = (process.env.CLIENT_URL || '')
