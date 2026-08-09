@@ -36,26 +36,25 @@ const googleResponseMessage = async (credentialResponse: any) => {
         });
 
         if (!response.ok) {
-            setError("Google sign-in error. Try again.");
+            setError('Google sign-in error. Try again.');
             return;
         }
 
         const data = await response.json();
         
-        // ← ВОТ ГЛАВНОЕ ИЗМЕНЕНИЕ:
         // Мы не просто пишем в localStorage, мы говорим AuthContext обновиться!
         loginWithGoogle(data.user, data); 
         
-        navigate("/");
+        navigate('/');
         
     } catch (err) {
         console.error('Google login error:', err);
-        setError("Server is not available. Try again later");
+        setError('Server is not available. Try again later');
     }
 }
     const googleErrorMessage = () => {
-    console.log("Google Error")
-    setError("Google sign-in error. Try again or use email.")
+    console.log('Google Error')
+    setError('Google sign-in error. Try again or use email.')
     }
 
     // Сбрасываем ошибку при уходе со страницы
@@ -68,11 +67,9 @@ const googleResponseMessage = async (credentialResponse: any) => {
     const onLogin = async (data: LoginData) => {
         const success = await login(data)
         if (success) {
-            navigate("/")
+            navigate('/')
         }
     }
-
-    console.log("🔍 ПРОВЕРКА: текущее значение error =", error)
 
     return (
         <div className="page">
@@ -96,7 +93,7 @@ const googleResponseMessage = async (credentialResponse: any) => {
                             <label htmlFor="email">Email Address</label>
                             <input
                                 {...register("email", {
-                                    required: "Email обязателен"
+                                    required: "Email is required"
                                 })}
                                 type="email"
                                 id="email"

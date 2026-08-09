@@ -22,14 +22,14 @@ const Registration: FC = () => {
     } = useForm<RegisterData>()
 
     const onRegister = async (data: RegisterData) => {
-        console.log("Data for registration:", data)
+        console.log('Data for registration:', data)
         setError(null)
         setLoading(true)
 
         try {
             const response = await fetch(`${API_URL}/users/registration`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
 
@@ -37,15 +37,15 @@ const Registration: FC = () => {
 
             // Если сервер вернул ошибку — показываем её и НЕ редиректим
             if (!response.ok) {
-                setError(result.message || "Registration error. Please try again..")
+                setError(result.message || 'Registration error. Please try again..')
                 return
             }
 
-            console.log("Registration success:", result)
+            console.log('Registration success:', result)
             navigate('/login')
         } catch (error) {
-            console.error("Registration error:", error)
-            setError("Server is not availavle, checl your network again.")
+            console.error('Registration error:', error)
+            setError('Server is not availavle, checl your network again.')
         } finally {
             setLoading(false)
         }

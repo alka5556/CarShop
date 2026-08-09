@@ -40,21 +40,21 @@ const Profile: FC = () => {
                 setError(null)
 //получаем данные пользователя имя пчота
                 let response = await fetch(`${API_URL}/users/profile`, {
-                    method: "GET",
-                    headers: { "Authorization": `Bearer ${accessToken}` }
+                    method: 'GET',
+                    headers: {'Authorization': `Bearer ${accessToken}`}
                 })
 
                 // Если токен протух — пробуем обновить
                 if (response.status === 401) {
                     const newToken = await refreshAccessToken()
                     if (!newToken) {
-                        navigate("/login")
+                        navigate('/login')
                         return
                     }
                     // Повторяем запрос с новым токеном
                     response = await fetch(`${API_URL}/users/profile`, {
-                        method: "GET",
-                        headers: { "Authorization": `Bearer ${newToken}` }
+                        method: 'GET',
+                        headers: {'Authorization': `Bearer ${newToken}` }
                     })
                 }
 
@@ -68,15 +68,15 @@ const Profile: FC = () => {
                 if (result.user) {
                     setUser(result.user)
                 } else {
-                    console.warn("Server did not return user:", result)
-                    setError("Server did not return user. Please try again later")
+                    console.warn('Server did not return user:', result)
+                    setError('Server did not return user. Please try again later')
                 }
-                 console.log("profile loaded:", result)
+                 console.log('profile loaded:', result)
 
-                // 2. Получаем заказы (Гараж) по правильному адресу
+                // Получаем заказы (Гараж) по правильному адресу
                 const ordersResponse = await fetch(`${API_URL}/orders/user-orders`, { 
-                    method: "GET",
-                    headers: { "Authorization": `Bearer ${accessToken}` }
+                    method: 'GET',
+                    headers: {'Authorization': `Bearer ${accessToken}` }
                 })
 
                 if (ordersResponse.ok) {
@@ -88,9 +88,9 @@ const Profile: FC = () => {
                         const carName = car && typeof car === 'object' ? `${car.brand} ${car.model}` : "Автомобиль (удалён)"
                         const imageUrl = car && typeof car === 'object' ? car.imageUrl : undefined
                         
-                        let statusText = "In processing"
-                        if (order.status === 'completed' || order.status === 'delivered') statusText = "In garage"
-                        if (order.status === 'pending') statusText = "Delivering"
+                        let statusText = 'In processing'
+                        if (order.status === 'completed' || order.status === 'delivered') statusText = 'In garage'
+                        if (order.status === 'pending') statusText = 'Delivering'
 
                         return {
                             _id: order._id,
@@ -106,8 +106,8 @@ const Profile: FC = () => {
 
 
             } catch (error) {
-                console.error("Profile loading error:", error)
-                setError("Profile loading error. Please try again later")
+                console.error('Profile loading error:', error)
+                setError('Profile loading error. Please try again later')
             } finally {
                 setLoading(false)
             }
@@ -131,9 +131,7 @@ const Profile: FC = () => {
 
             const response = await fetch(`${API_URL}/users/avatar`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${accessToken}`
-                },
+                headers: {'Authorization': `Bearer ${accessToken}` },
                 body: formData
             })
 
@@ -145,9 +143,7 @@ const Profile: FC = () => {
                 }
                 const retryResponse = await fetch(`${API_URL}/users/avatar`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${newToken}`
-                    },
+                    headers: {'Authorization': `Bearer ${newToken}`},
                     body: formData
                 })
 

@@ -23,27 +23,27 @@ const Cart: FC = () => {
     // Загрузка корзины при открытии страницы
     useEffect(() => {
         if (!accessToken) {
-            navigate("/login")
+            navigate('/login')
             return
         }
 
         dispatch(fetchCart()).then((result) => {
             // Если fetchCart вернул AUTH_EXPIRED — значит, обновить токен не удалось
             if (fetchCart.rejected.match(result) && result.payload === 'AUTH_EXPIRED') {
-                navigate("/login")
+                navigate('/login')
             }
         })
     }, [accessToken, dispatch, navigate]) //
 
     // Удаление товара из корзины
     const removeItem = async (id: string) => {
-        if (!window.confirm("Delete this item?")) return
+        if (!window.confirm('Delete this item?')) return
 
         const result = await dispatch(removeCartItem(id))
 
         if (removeCartItem.rejected.match(result)) {
             if (result.payload === 'AUTH_EXPIRED') {
-                navigate("/login")
+                navigate('/login')
             }
         }
     }
@@ -57,14 +57,14 @@ const Cart: FC = () => {
 
     // Оформление заказа
     const onCheckout = async () => {
-        if (!window.confirm("Place an order?")) return
+        if (!window.confirm('Place an order?')) return
 
         const result = await dispatch(checkout(cartItems))
 
         if (checkout.fulfilled.match(result)) {
             navigate('/orders')
         } else if (result.payload === 'AUTH_EXPIRED') {
-            navigate("/login")
+            navigate('/login')
         } 
     }
 

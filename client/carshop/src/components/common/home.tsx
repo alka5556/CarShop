@@ -21,12 +21,12 @@ const Home: FC = () => {
 
     const handleLogout = async () => {
         logout() // Вызываем функцию из Context API
-        navigate("/login")
+        navigate('/login')
     }
 
     const addToCart = async (carId: string) => {
         if (!accessToken) {
-            navigate("/login")
+            navigate('/login')
             return
         }
 
@@ -36,9 +36,9 @@ const Home: FC = () => {
             setAddedCarId(carId) //если все ок идет анимация галоки
             setTimeout(() => setAddedCarId(null), 1500)
         } else if (result.payload === 'AUTH_EXPIRED') {
-            navigate("/login")
+            navigate('/login')
         } else {
-            alert("Failed to add item to cart. Please try again.")
+            alert('Failed to add item to cart. Please try again.')
         }
     }
 
