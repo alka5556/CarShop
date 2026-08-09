@@ -201,14 +201,14 @@ exports.googleSignin = async (req, res, next) => {
         });
         
         const payload = ticket.getPayload();
-        console.log("Google Payload received:", payload); 
+        console.log("Google Payload:", payload); 
         
         const email = payload?.email;
         let user = await User.findOne({ 'email': email });
         
         // 2. Если пользователя нет, создаем его
         if (user == null) {
-            console.log("Creating a new user from Google...");
+            console.log("Creating new Google user...");
             user = await User.create({
                 'email': email,
                 'username': payload?.name || 'Google User', // Добавил username для надежности
@@ -216,7 +216,7 @@ exports.googleSignin = async (req, res, next) => {
                 'password': 'google-signin'
             });
         } else {
-            console.log('User found in the database:', user.email);
+            console.log("User found in the base:", user.email);
         }
         
         // 3. Генерация токенов (ИСПРАВЛЕНО: используем твою реальную функцию generateTokens)
@@ -243,7 +243,7 @@ exports.googleSignin = async (req, res, next) => {
         
     } catch (err) {
         // ДОБАВЛЕНО: чтобы мы наконец увидели реальную ошибку в терминале, если она есть
-        console.error('Google Signin error:', err);
-        return res.status(400).json({ message: 'error missing email or password'});
+        console.error("Error Google Signin:", err);
+        return res.status(400).json({ message: "error missing email or password" });
     }
 }
