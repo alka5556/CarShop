@@ -79,7 +79,11 @@ const Registration: FC = () => {
                         <label htmlFor="email">Email</label>
                         <input
                             {...register("email", {
-                                required: "Email обязателен"
+                                required: "Email is required",
+                                pattern: {
+                                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                    message: "Invalid email address format"
+                                }
                             })}
                             type="email"
                             id="email"

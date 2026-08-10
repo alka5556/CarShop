@@ -30,16 +30,21 @@
 }
 
 .add-form {
-    margin-bottom: 30px;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #f9f9f9;
+    margin: 0 auto 40px auto; 
+    padding: 30px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    background: #ffffff; 
+    max-width: 500px; 
+    width: 100%;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06); 
 }
 
 .add-form h3 {
     margin-top: 0;
+    margin-bottom: 20px;
     color: #111;
+    text-align: center; 
 }
 
 .image-preview-wrapper {
@@ -73,9 +78,12 @@
 
 .image-upload-btn {
     position: absolute;
-    bottom: 0;
-    right: calc(50% - 120px);
+    bottom: -25px; 
+    left: 50%;
+    transform: translateX(-50%); 
+    z-index: 10;
 }
+
 
 .upload-label {
     cursor: pointer;

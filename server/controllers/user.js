@@ -39,10 +39,13 @@ exports.registration = async (req, res, next) => {
 
     res.status(201).json({ 
     success: true, accessToken, refreshToken,
-    user: {role: savedUser.role} // <-- ДОБАВИЛИ ЭТУ СТРОКУ
+    user: {role: savedUser.role} 
 })
 
   } catch (error) {
+    if (error.code === 11000) {
+        return res.status(400).json({ message: 'User with this email already exists' })
+    }
     next(error)
   }
 }
