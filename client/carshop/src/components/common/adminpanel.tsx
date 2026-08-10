@@ -28,7 +28,7 @@ const AdminPanel = () => {
     //идет в индекс тс и просит оттуда все что касается карс state => state.cars (чтобы получить машины)
     const { items: cars, loading, error } = useAppSelector((state) => state.cars)
 
-    const { user } = useAuth()
+    const { user, initializing } = useAuth()
     const [showForm, setShowForm] = useState<boolean>(false)
     const [preview, setPreview] = useState<string | null>(null)
 
@@ -41,13 +41,16 @@ const AdminPanel = () => {
     })
 
     useEffect(() => {
+        if (initializing) {
+        return // ждём, пока AuthContext закончит проверку токена
+    }
         if (user?.role !== 'admin') {
             navigate('/')
             return
         }
         // Вместо своей fetchCars() — просим Redux загрузить машины
         dispatch(fetchCars()) //идёт в index.ts → перенаправляется в carsSlice.ts
-    }, [user, navigate, dispatch])
+    }, [user, initializing, navigate, dispatch])
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => { //Это объявление функции, которая срабатывает, когда 
         //пользователь нажимает кнопку «Выбрать файл» и выбирает картинку.

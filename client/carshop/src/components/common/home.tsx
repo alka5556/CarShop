@@ -15,7 +15,7 @@ const Home: FC = () => {
     const { items: cars, loading, error } = useAppSelector((state) => state.cars)
 
 // Пользователь и логаут — из Context, а не из localStorage вручную
-    const { user, accessToken, logout } = useAuth() //CONTEXT API: Подписываемся на данные пользователя
+    const { user, accessToken, logout, initializing } = useAuth() //CONTEXT API: Подписываемся на данные пользователя
     const isLogged = !!accessToken
     const [addedCarId, setAddedCarId] = useState<string | null>(null) //ххроним локально ибо анимация галочки
 
@@ -55,7 +55,7 @@ const Home: FC = () => {
                     <Link to="/">Home</Link>
                     <Link to="/profile">Profile</Link>
                     <Link to="/cart">Cart</Link>
-                    {user?.role === "admin" && (
+                    {!initializing && user?.role === "admin" && (
                     <Link to="/admin" style={{ color: '#c8102e', fontWeight: 'bold' }}>
                             Admin Panel
                     </Link>
