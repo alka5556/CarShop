@@ -74,30 +74,85 @@ A modern full-stack web application for buying and selling cars, built with Reac
 ```
 Request → CORS → Body Parser → [Auth Middleware] → [Role Middleware] → Controller → Response
 ```
+## MongoDB Schema & Data Architecture
+
+The application uses 4 main collections in MongoDB, managed via Mongoose ODM.
+
+### 1. User Collection (`users`)
+- `_id`: ObjectId
+- `email`: String (unique, required, lowercase)
+- `password`: String (required, hashed with bcrypt)
+- `username`: String
+- `role`: String (enum: ['user', 'admin'], default: 'user')
+- `avatar`: String (URL)
+- `refreshToken`: String
+- `createdAt`, `updatedAt`: Date (auto-generated)
+
+### 2. Car Collection (`cars`)
+- `_id`: ObjectId
+- `brand`: String (required)
+- `model`: String (required)
+- `year`: Number (required)
+- `price`: Number (required)
+- `imageUrl`: String (Cloudinary URL or local path)
+- `createdAt`, `updatedAt`: Date (auto-generated)
+
+### 3. Cart Collection (`carts`)
+- `_id`: ObjectId
+- `userId`: ObjectId (ref: 'User', required, unique)
+- `items`: Array of Objects
+  - `carId`: ObjectId (ref: 'Car') —  N:M with Car
+  - `quantity`: Number (default: 1)
+- `updatedAt`: Date
+
+### 4. Order Collection (`orders`)
+- `_id`: ObjectId
+- `userId`: ObjectId (ref: 'User', required)
+- `items`: Array of Objects
+  - `carId`: ObjectId (ref: 'Car') — N:M with Car
+  - `brand`, `model`, `price`: String/Number 
+- `status`: String (enum: ['pending', 'completed', 'delivered'], default: 'pending')
+- `total`: Number
+- `createdAt`, `updatedAt`: Date
+
+### Relationships Summary
+
+| From | To | Type | Description |
+|------|-----|------|-------------|
+| User | Cart | 1:1 | Each user has exactly one cart |
+| User | Order | 1:N | One user can place multiple orders |
+| Car | Cart | N:M | A car can be in multiple carts |
+| Car | Order | N:M | A car can appear in multiple orders |
+
+### Mongoose Features Used
+
+- **References (`ref`)**: Cart and Order use ObjectId references to link Users and Cars
+- **Middleware Hooks**: `pre('save')` hook in User model to hash passwords with bcrypt before saving
+- **Instance Methods**: `matchPassword()` method in User model for secure password comparison
+- **Timestamps**: All models use `timestamps: true` for automatic createdAt and updatedAt fields
+- **Select Exclusion**: Password field is excluded from query results by default (`select: false`)
+- **Enum Validation**: `role` and `status` fields use enum constraints to prevent invalid values
+- **Unique Indexes**: `email` in User and `userId` in Cart have unique constraints
 
 ## Environment Variables
 
 ### Backend (.env)
 
-Create a `.env` file in the `/server` directory based on `.env.example`:
-
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `DATABASE_URL` | MongoDB connection string (local or Atlas) | `mongodb://127.0.0.1:27017/carshop` or `mongodb+srv://...` |
-| `JWT_SECRET` | Secret key for signing JWT tokens (use strong random string) | `your-secret-key-here` |
+| `DATABASE_URL` | MongoDB connection string (local or Atlas) |
+| `JWT_SECRET` | Secret key for signing JWT tokens (use strong random string) |
 | `JWT_EXPIRE` | Access token expiration time | `15m` |
 | `JWT_REFRESH_EXPIRE` | Refresh token expiration time | `20d` |
 | `PORT` | Server port (optional, defaults to 3000) | `3000` |
 | `CLIENT_URL` | Frontend URL(s) for CORS (comma-separated) | `http://localhost:5173,https://yourdomain.com` |
-| `GOOGLE_CLIENT_ID` | Google OAuth Client ID from Google Cloud Console | `xxx.apps.googleusercontent.com` |
-| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name (optional) | `your-cloud-name` |
-| `CLOUDINARY_API_KEY` | Cloudinary API key (optional) | `your-api-key` |
-| `CLOUDINARY_API_SECRET` | Cloudinary API secret (optional) | `your-api-secret` |
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID from Google Cloud Console |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name | 
+| `CLOUDINARY_API_KEY` | Cloudinary API key|
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret | 
 
 **Notes:**
 - If Cloudinary credentials are not provided, images are saved locally in `/server/uploads/`
-- Leave `CLIENT_URL` empty to allow all origins (not recommended for production)
-- Generate a secure `JWT_SECRET` using: `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"`
 
 ### Frontend (.env)
 
@@ -163,16 +218,14 @@ The frontend uses Vite's environment variable system. Create `.env` in `/client/
 
 ### Production Build
 
-1. **Build the frontend**
+Since this is a Monorepo, you can build and run the entire application from the root directory using the unified scripts:
+
+1. **Build the frontend and install all dependencies**
    ```bash
-   cd client/carshop
    npm run build
    ```
-
-2. **Start the backend** (it will serve the frontend statically)
-   ```bash
-   cd ../../server
-   npm run build
+2. **Start the server**
+   ```
    npm start
    ```
 
