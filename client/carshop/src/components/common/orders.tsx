@@ -68,7 +68,12 @@ const Orders: FC = () => {
                                 {orders.length > 0 ? orders.map((order) => (
                                     <tr key={order._id}>
                                         <td className="order-id">#{order._id}</td>
-                                        <td>{order.carId?.brand} {order.carId?.model}</td>
+                                        <td>
+                                            {order.carId
+                                                ? `${order.carId.brand} ${order.carId.model}`
+                                                : <span style={{ color: '#c8102e', fontStyle: 'italic' }}>Car removed from catalog</span>
+                                            }
+                                        </td>
                                         <td>{order.date}</td>
                                         <td>
                                             <span className={`status-pill status-${order.status}`}>
