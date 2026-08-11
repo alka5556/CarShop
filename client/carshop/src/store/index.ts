@@ -6,7 +6,8 @@ import carsReducer from './slices/carsSlice'
 import cartReducer from './slices/cartSlice'
 import orderReducer from './slices/orderSlice'
 
-export const store = configureStore({
+//собиарется все состояние (state) приложения в один большой объект.
+export const store = configureStore({ //делаем его доступным для всего приложения
   reducer: {
     cars: carsReducer,
     cart: cartReducer,

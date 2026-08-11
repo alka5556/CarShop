@@ -85,7 +85,7 @@ const Profile: FC = () => {
                     
                     const mappedCars: GarageCar[] = ordersList.map((order: any) => {
                         const car = order.carId 
-                        const carName = car && typeof car === 'object' ? `${car.brand} ${car.model}` : "Автомобиль (удалён)"
+                        const carName = car && typeof car === 'object' ? `${car.brand} ${car.model}` : "Car (Deleted)"
                         const imageUrl = car && typeof car === 'object' ? car.imageUrl : undefined
                         
                         let statusText = 'In processing'
@@ -226,7 +226,12 @@ const Profile: FC = () => {
                             <div className="garage-grid">
                                 {garageCars.length > 0 ? garageCars.map((car) => (
                                     <div className="car-item" key={car._id}>
-                                        {car.imageUrl ? (
+                                        {car.carName === "Car (Deleted)" ? (
+                                            <div style={{ width: '100%',  height: '140px', padding: '15px', background: '#fff3cd', borderRadius: '6px', marginBottom: '12px', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', boxSizing: 'border-box' }}>
+                                                <p style={{ color: '#856404', margin: 0, fontWeight: 'bold' }}>This car was removed from the catalog</p>
+                                                <p style={{ color: '#856404', fontSize: '0.8rem', margin: '6px 0 0 0' }}>Your order history is preserved</p>
+                                            </div>
+                                        ) : car.imageUrl ? (
                                             <img
                                                 src={resolveImageUrl(car.imageUrl)}
                                                 alt={car.carName}
@@ -248,7 +253,7 @@ const Profile: FC = () => {
                                     </div>
                                 )) : (
                                     <div className="empty-garage" style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: '#666', background: '#f9f9f9', borderRadius: '8px' }}>
-                                        <p style={{ fontSize: '1.1rem', marginBottom: '15px' }}>Ваш гараж пока пуст.</p>
+                                        <p style={{ fontSize: '1.1rem', marginBottom: '15px' }}>Your garage is empty for now.</p>
                                         <Link to="/" style={{
                                             display: 'inline-block',
                                             background: '#c8102e',

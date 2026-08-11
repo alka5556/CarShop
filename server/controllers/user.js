@@ -215,7 +215,7 @@ exports.googleSignin = async (req, res, next) => {
             user = await User.create({
                 'email': email,
                 'username': payload?.name || 'Google User', // Добавил username для надежности
-                'avatar': payload?.picture, // ИСПРАВЛЕНО: imgUrl -> avatar (как в uploadAvatar)
+                'avatar': payload?.picture, 
                 'password': 'google-signin'
             });
         } else {

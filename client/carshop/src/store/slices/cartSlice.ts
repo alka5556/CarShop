@@ -29,8 +29,6 @@ const initialState: CartState = {
 
 // Вспомогательная функция: делает запрос с токеном,
 // а если токен протух (401) — обновляет его и повторяет запрос один раз.
-// Это то же самое, что было в cart.tsx, просто вынесено в одно место,
-// чтобы не копировать одинаковый код в fetchCart / removeCartItem / checkout.
 async function fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
   const token = localStorage.getItem('accessToken');
 
@@ -153,7 +151,7 @@ export const checkout = createAsyncThunk<void, CartItem[], { rejectValue: string
     }
   }
 );
-
+//Здесь мы говорим Redux, как именно менять состояние в ответ на действия курьеров.
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
@@ -162,7 +160,7 @@ const cartSlice = createSlice({
       state.error = null;
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: (builder) => { //асинхронные действия
     builder
       // Загрузка корзины
       .addCase(fetchCart.pending, (state) => {
